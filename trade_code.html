@@ -1,0 +1,1446 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="./cp_navi.css">
+  <link rel="stylesheet" href="./google-code-prettify/prettify1.css">
+  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/desert.css"> -->
+  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/doxy.css"> -->
+  <title>Tradeing Indicator</title>
+  <script lang="python" type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <!-- <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script> -->
+</head>
+
+<!-- <body> -->
+
+<body style="background-image: url(./wall/b029.gif);">
+  <!-- 排他的個人主義 -->
+
+  <script src="./google-code-prettify/prettify.js"></script>
+  <!-- <script src="./google-code-prettify/lang-cl.js"></script> -->
+  <!-- <script src="./google-code-prettify/lang-css.js"></script> -->
+  <script>
+    window.addEventListener("load", function() {
+      PR.prettyPrint();
+    });
+  </script>
+
+  <script type="text/javascript">
+    var day = new Date(document.lastModified);
+    var y = day.getFullYear();
+    var m = day.getMonth() + 1;
+    var d = day.getDate();
+
+    var week = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+    var w = week[day.getDay()];
+
+    if (m < 10) m = "0" + m; // 数値が1～9の時には
+    if (d < 10) d = "0" + d; // 0 を追加してそろえる
+
+    document.write("Last Update: " + y + "/" + m + "/" + d + " (" + w + ")");
+  </script>
+
+  <div id="A_top">
+    <ul>
+      <li><a href="./home.html">HOME</a></li>
+      <li>
+        <a href="./trade.html">TRADE<span class="caret"></span></a>
+        <div>
+          <ul>
+            <li><a href="./indicator.html">Indicator</a></li>
+            <li><a href="./trade_code.html">CODE</a></li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <a href="#">HOBBY<span class="caret"></span></a>
+        <div>
+          <ul>
+            <li><a href="./othello.html">othello</a></li>
+            <li><a href="./translate.html">translate</a></li>
+            <li><a href="#rabbit">rabbit</a></li>
+          </ul>
+        </div>
+      </li>
+      <li><a href="#">HELP</a></li>
+    </ul>
+  </div>
+
+  <div id="B_left">
+    <a href="#trade_main">エントリー</a>
+    <a href="#trade_param">パラメータファイル</a>
+    <a href="#trade_currency">標準スプレッド</a>
+    <!-- <a href="#macd">MACD</a>
+    <a href="#ema">EMA</a> -->
+  </div>
+
+  <div id="D_center">
+    <h1>OANDA-Pythonコード</h1>
+    <p><a href="https://www.oanda.jp">OANDA</a>より相場の価格データを入手する。
+      そのデータを元に今後の相場の展望を予測する。</p>
+
+    <h2>自動売買</h2>
+    <p>入手した為替データから、RSI、MACDなどの指標を計算しエントリーの機会を探る。
+      エントリーのチャンスが来たら自動でエントリーを行い、また決済も行う。</p>
+    <ol type="1">
+      <li id="trade_main">Mainコード</li>
+      <!-- <p>全体の変動幅から、相場の過熱感（買われ過ぎ、売られ過ぎ）を判断する</p> -->
+
+      <!-- \begin{align}
+    F(\omega) = \cfrac{1}{\sqrt{2\pi}}\int_{-\infty}^{+\infty}f(t)e^{i\omega t}dt
+    \end{align} -->
+      <!-- \begin{align}
+      \mathrm{RS} &= \frac{期間中の平均上昇幅}{期間中の平均下落幅} \equiv \frac{\alpha}{\beta} \\
+      \mathrm{RSI} &= \left( 1 - \frac{1}{1 - \mathrm{RS}} \right) \times 100 \\
+      &= \left( 1 - \frac{\beta}{\beta - \alpha} \right) \times 100
+      \end{align}
+
+      <ol type="a">
+        <li>平均上昇幅 (sum_positive)</li>
+        最初 : (14日間の上昇幅の合計)÷14
+        <br>
+        以降 : (前日までの平均上昇幅 × (14-1)+直近の上昇幅)÷14
+        <li>平均下落幅 (sum_negative)</li>
+        最初 : (14日間の下落幅の合計)÷14
+        <br>
+        以降 : (前日までの平均下落幅 × (14-1)+直近の下落幅)÷14
+      </ol> -->
+
+      <br>
+      <!-- http://www.yamamo10.jp/yamamoto/internet/WEB/regulation/GCP/index.php -->
+      <div style="width: 95%; height: 600px; overflow-x: scroll; overflow-y: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
+        <pre><code class="prettyprint lang-py linenums">    # coding: utf-8
+    import configparser
+
+    # ファイルの存在チェック用モジュール
+    import os
+    import errno
+
+    import requests
+    import json
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from datetime import datetime, timedelta
+    import time
+    import copy
+
+    import pandas as pd
+    from datetime import datetime
+    import json
+    import oandapyV20
+    import oandapyV20.endpoints.orders as orders
+    import oandapyV20.endpoints.instruments as instruments
+    from oandapyV20.endpoints.positions import OpenPositions, PositionClose
+
+    # ================================================== #
+    #                                                    #
+    #  read configure file "config.ini"                  #
+    #                                                    #
+    # ================================================== #
+
+    config_ini      = configparser.ConfigParser(inline_comment_prefixes=('#', ';'))
+    config_ini_path = './config.ini'
+
+    if not os.path.exists(config_ini_path):
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), config_ini_path)
+
+    config_ini.read(config_ini_path, encoding='utf-8')
+
+    read_default   = config_ini['DEFAULT']
+    account_id     = read_default.get('account_id')
+    api_key        = read_default.get('api_key')
+
+    read_mode      = config_ini['MODE']
+    BACKTEST       = read_mode.getint('BACKTEST')
+    TRADE_OFF      = read_mode.getint('TRADE_OFF')
+    STEP           = read_mode.getint('STEP')
+    TRADE_STYLE    = read_mode.getint('TRADE_STYLE')
+    MODE           = read_mode.getint('MODE')
+    ORDER_ID       = read_mode.getint('ORDER_ID')
+    RESTART        = read_mode.getint('RESTART')
+    LOAD_DATA      = read_mode.getint('LOAD_DATA')
+    load_file1     = read_mode.get('load_file1')
+    load_file2     = read_mode.get('load_file2')
+    LOG            = read_mode.getint('LOG')
+    LOG_FILE       = read_mode.get('LOG_FILE')
+
+    read_order     = config_ini['ORDER']
+    PRICE          = read_order.get('PRICE')
+    INSTRUMENT     = read_order.get('INSTRUMENT')
+    UNITS          = read_order.getint('UNITS')
+    TYPE           = read_order.get('TYPE')
+
+    setting        = config_ini['SETTING']
+    lot            = setting.getint('LOT')
+    slippage       = setting.getfloat('SLIPPAGE')
+    SUPPORT_IGNORE = setting.getint('SUPPORT_IGNORE')
+
+    if TRADE_STYLE == 2:
+        print("scalping mode")
+        scal_set       = config_ini['SCAL_SETTING']
+        CANDLE_LONG    = scal_set.get('CANDLE_LONG')
+        CANDLE_BASE    = scal_set.get('CANDLE_BASE')
+        CANDLE_SHORT   = scal_set.get('CANDLE_SHORT')
+        QUOTE_WIDTH    = scal_set.getfloat('QUOTE_WIDTH')
+        TERM_IN        = scal_set.getint('TERM_IN')
+        TERM_OUT       = scal_set.getint('TERM_OUT')
+        TERM_SUP_IN    = scal_set.getint('TERM_SUP_IN')
+        TERM_SUP_OUT   = scal_set.getint('TERM_SUP_OUT')
+
+        RSI_BIN        = scal_set.getint('RSI_BIN')
+        MACD_SLOW      = scal_set.getint('MACD_SLOW')
+        MACD_FAST      = scal_set.getint('MACD_FAST')
+        SIGNAL_SMOOTH  = scal_set.getint('SIGNAL_SMOOTH')
+    else:
+        print("day trade mode")
+        day_set       = config_ini['DAY_SETTING']
+        CANDLE_LONG    = day_set.get('CANDLE_LONG')
+        CANDLE_BASE    = day_set.get('CANDLE_BASE')
+        CANDLE_SHORT   = day_set.get('CANDLE_SHORT')
+        QUOTE_WIDTH    = day_set.getfloat('QUOTE_WIDTH')
+        TERM_IN        = day_set.getint('TERM_IN')
+        TERM_OUT       = day_set.getint('TERM_OUT')
+        TERM_SUP_IN    = day_set.getint('TERM_SUP_IN')
+        TERM_SUP_OUT   = day_set.getint('TERM_SUP_OUT')
+
+        RSI_BIN        = day_set.getint('RSI_BIN')
+        MACD_SLOW      = day_set.getint('MACD_SLOW')
+        MACD_FAST      = day_set.getint('MACD_FAST')
+        SIGNAL_SMOOTH  = day_set.getint('SIGNAL_SMOOTH')
+
+
+    # ================================================== #
+    #                                                    #
+    #  read currency file "currency.txt"                 #
+    #                                                    #
+    # ================================================== #
+
+    currency       = configparser.ConfigParser(inline_comment_prefixes=('#', ';'))
+    currency_path  = './currency.txt'
+
+    if not os.path.exists(currency_path):
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), currency_path)
+
+    currency.read(currency_path, encoding='utf-8')
+
+    CURRENCY    = currency[INSTRUMENT]
+    SPREAD      = CURRENCY.getfloat('SPREAD')
+    PIPS_ADJUST = CURRENCY.getfloat('PIPS_ADJUST')
+
+    print("PARE : {}, standerd spread : {}".format(CURRENCY, SPREAD))
+
+
+
+    oanda = oandapyV20.API(access_token=api_key)
+
+    API_URL =  "https://api-fxpractice.oanda.com"
+    # <現在レートの取得用URLの変数の設定>
+    url = API_URL + "/v3/accounts/%s/pricing?instruments=%s" % (str(account_id), INSTRUMENT)
+    # ヘッダー情報の変数の設定
+    headers = {
+        "Authorization" : "Bearer " + api_key
+    }
+    # サーバーへの要求
+    response = requests.get(url, headers=headers)
+    # 処理結果の編集
+    Response_Body = json.loads(response.text)
+
+    #ドル円データを取得する関数
+    def get_price(chart_sec, COUNT):
+        price = []
+        r = instruments.InstrumentsCandles(instrument=INSTRUMENT,
+        params={
+            "granularity":chart_sec,
+            "count" : COUNT
+        })
+        oanda.request(r)
+        try:
+            data = r.response["candles"]
+        except requests.exceptions.ConnectTimeout:
+            print(f"\rタイムアウトしました...\n再接続待機中...{stand_by_sec}秒後に再実行します", end="", flush=True)
+            sleep(stand_by_sec)
+            data = get_price(chart_sec, COUNT)
+
+        for j in range(len(data)):
+            price.append({ "close_time" : pd.to_datetime(data[j]["time"]),
+                "open_price" : float(data[j]["mid"]["o"]),
+                "close_price" : float(data[j]["mid"]["c"]),
+                "low_price" : float(data[j]["mid"]["l"]),
+                "high_price" : float(data[j]["mid"]["h"])})
+
+        return price
+
+
+    # json形式のファイルから価格データを読み込む関数
+    def get_price_from_file(path):
+        file = open(path,'r',encoding='utf-8')
+        price = json.load(file)
+        return price
+
+
+    #取得データをAnaconda Promotに表示する関数
+    def print_price( data ):
+        print( "時間: " + str(data["close_time"])
+                    + " 始値: " + str(data["open_price"])
+                    + " 終値: " + str(data["close_price"]) )
+
+
+    # 時間と始値・終値をログに記録する関数
+    def log_price( data,flag ):
+        log =  "時間： " + str(data["close_time"]) + " 始値： " + str(data["open_price"]) + " 終値： " + str(data["close_price"]) + "\n"
+        flag["records"]["log"].append(log)
+        return flag
+
+    # 単純移動平均
+    def SMA(last_data, DAY, BASE):
+        ma = 0
+        i = 0
+        while i < DAY:
+            ma += last_data[-(DAY + i + BASE)]["close_price"]
+            i += 1
+        sma = ma / DAY
+        return sma
+
+    # 指数平滑移動平均
+    def EMA(last_data, DAY, BASE):
+        ma = 0
+        i = 0
+        while(i < DAY):
+            ma += last_data[-(DAY + i + BASE)]["close_price"]
+            i += 1
+        ema = ma / DAY
+
+        alpha = 2 / (DAY + 1)
+        j = 0
+        while (j < DAY):
+            ema += alpha * (last_data[-(DAY - j + BASE)]["close_price"] - ema)
+            j += 1
+        return ema
+
+
+    def RSI(last_data, BASE):
+        sum_positive = 0
+        sum_negative = 0
+        i = 1
+        while (i <= RSI_BIN):
+            if last_data[-(i+BASE)]["close_price"] >= last_data[-(i+1+BASE)]["close_price"]:
+                sum_positive += last_data[-(i+BASE)]["close_price"] - last_data[-(i+1+BASE)]["close_price"]
+            else:
+                sum_negative += last_data[-(i+1+BASE)]["close_price"] - last_data[-(i+BASE)]["close_price"]
+
+            i += 1
+
+        rsi = (1 - (sum_negative / (sum_negative + sum_positive))) * 100
+
+        if rsi <= 0 or rsi >= 100:
+            print("RSI :", rsi)
+        return rsi
+
+
+    def MACD(last_data, BASE):
+        sig = 0
+        i   = 0
+        while(i < SIGNAL_SMOOTH):
+            sig += EMA(last_data, MACD_FAST, i+BASE) - EMA(last_data, MACD_SLOW, i+BASE)
+            i += 1
+
+        macd = EMA(last_data, MACD_FAST, BASE) - EMA(last_data, MACD_SLOW, BASE)
+        sign = sig / SIGNAL_SMOOTH
+        return macd, sign
+
+
+    # 逆張り
+    def support_scal(data_short, last_data, fresh_data, long_fresh_data):
+        rsi      = RSI(fresh_data, 0)
+        rsi_long = RSI(long_fresh_data, 0)
+        highest  = max(i["high_price"] for i in last_data[-1 * TERM_SUP_IN:-1])
+        lowest   = min(i["close_price"] for i in last_data[-1 * TERM_SUP_IN:-1])
+        macd, signal = MACD(last_data, 0)
+        if rsi_long > 85 or (rsi > 95 and rsi_long > 60) or (rsi_long > 60 and macd - signal < 0 and macd - signal > -0.01):
+            return {"side":"SELL","price":lowest}
+
+        if rsi_long < 15 or (rsi < 5 and rsi_long < 40) or (rsi_long < 40 and macd - signal > 0 and macd - signal < 0.01):
+            return {"side":"BUY","price":highest}
+
+        return {"side" : None , "price":0}
+
+    # 逆張り
+    def support_scal_exe(data_short,last_data, fresh_data, long_fresh_data):
+        rsi      = RSI(fresh_data, 0)
+        rsi_long = RSI(long_fresh_data, 0)
+        macd, signal = MACD(last_data, 0)
+        highest  = max(i["high_price"] for i in last_data[-1 * TERM_OUT:-1])
+        lowest   = min(i["low_price"] for i in last_data[-1 * TERM_OUT:-1])
+
+        if rsi_long > 85 or (rsi > 95 and rsi_long > 60) or (rsi_long > 60 and macd - signal < 0 and macd - signal > -0.01):
+            return {"side":"SELL","price":lowest}
+
+        if rsi_long < 15 or (rsi < 5 and rsi_long < 40) or (rsi_long < 40 and macd - signal > 0 and macd - signal < 0.01):
+            return {"side":"BUY","price":highest}
+
+        return {"side" : None , "price":0}
+
+
+    # ブレイクを判定する関数
+    def breakout_scal(data_short, last_data, fresh_data, long_fresh_data):
+        rsi      = RSI(last_data, 0)
+        rsi_long = RSI(long_fresh_data, 0)
+        highest = max(i["high_price"] for i in last_data[-1 * TERM_IN:-1])
+        if (rsi < 40 or rsi_long < 40) and data_short["close_price"] > highest:
+            return {"side":"BUY","price":highest}
+
+        lowest = min(i["low_price"] for i in last_data[-1 * TERM_IN:-1])
+        if (rsi > 60 or rsi_long > 60) and data_short["close_price"] < lowest:
+            return {"side":"SELL","price":lowest}
+
+        return {"side" : None , "price":0}
+
+    # ブレイクを判定する関数
+    def breakout_scal_exe(data_short, last_data, long_fresh_data):
+        rsi      = RSI(last_data, 0)
+        rsi_long = RSI(long_fresh_data, 0)
+        highest  = max(i["close_price"] for i in last_data[-1 * TERM_OUT:-1])
+        lowest   = min(i["close_price"] for i in last_data[-1 * TERM_OUT:-1])
+        if (rsi_long < 60 or rsi < 60) and data_short["close_price"] > highest:
+            return {"side":"BUY","price":highest}
+
+        if (rsi_long > 40 or rsi > 40) and data_short["close_price"] < lowest:
+            return {"side":"SELL","price":lowest}
+
+        return {"side" : None , "price":0}
+
+
+    # 逆張り
+    def support(data_short, last_data, fresh_data, long_fresh_data):
+        rsi      = RSI(fresh_data, 0)
+        rsi_long = RSI(long_fresh_data, 0)
+        highest  = max(i["high_price"] for i in last_data[-1 * TERM_SUP_IN:-1])
+        lowest   = min(i["close_price"] for i in last_data[-1 * TERM_SUP_IN:-1])
+        macd, signal = MACD(last_data, 0)
+        if rsi_long > 80 or (rsi > 90 and rsi_long > 60) or (rsi_long > 60 and macd - signal < 0 and macd - signal > -0.05):
+            return {"side":"SELL","price":lowest}
+
+        if rsi_long < 20 or (rsi < 10 and rsi_long < 40) or (rsi_long < 40 and macd - signal > 0 and macd - signal < 0.05):
+            return {"side":"BUY","price":highest}
+
+        return {"side" : None , "price":0}
+
+    # 逆張り
+    def support_exe(data_short,last_data, fresh_data, long_fresh_data):
+        rsi      = RSI(fresh_data, 0)
+        rsi_long = RSI(long_fresh_data, 0)
+        macd, signal = MACD(last_data, 0)
+        highest  = max(i["high_price"] for i in last_data[-1 * TERM_OUT:-1])
+        lowest   = min(i["low_price"] for i in last_data[-1 * TERM_OUT:-1])
+
+        if rsi_long > 80 or (rsi > 90 and rsi_long > 60) or (rsi_long > 60 and macd - signal < 0 and macd - signal > -0.05):
+            return {"side":"SELL","price":lowest}
+
+        if rsi_long < 20 or (rsi < 10 and rsi_long < 40) or (rsi_long < 40 and macd - signal > 0 and macd - signal < 0.05):
+            return {"side":"BUY","price":highest}
+
+        return {"side" : None , "price":0}
+
+
+    # ブレイクを判定する関数
+    def breakout(data_short, last_data, fresh_data, long_fresh_data):
+        rsi      = RSI(last_data, 0)
+        rsi_long = RSI(long_fresh_data, 0)
+        highest = max(i["high_price"] for i in last_data[-1 * TERM_IN:-1])
+        if (rsi < 40 or rsi_long < 40) and data_short["close_price"] > highest:
+            return {"side":"BUY","price":highest}
+
+        lowest = min(i["low_price"] for i in last_data[-1 * TERM_IN:-1])
+        if (rsi > 60 or rsi_long > 60) and data_short["close_price"] < lowest:
+            return {"side":"SELL","price":lowest}
+
+        return {"side" : None , "price":0}
+
+    # ブレイクを判定する関数
+    def breakout_exe(data_short, last_data, long_fresh_data):
+        rsi      = RSI(last_data, 0)
+        rsi_long = RSI(long_fresh_data, 0)
+        highest  = max(i["close_price"] for i in last_data[-1 * TERM_OUT:-1])
+        lowest   = min(i["close_price"] for i in last_data[-1 * TERM_OUT:-1])
+        if (rsi_long < 60 or rsi < 60) and data_short["close_price"] > highest:
+            return {"side":"BUY","price":highest}
+
+        if (rsi_long > 40 or rsi > 40) and data_short["close_price"] < lowest:
+            return {"side":"SELL","price":lowest}
+
+        return {"side" : None , "price":0}
+
+    # ブレイクを判定してエントリー注文を出す関数
+    def entry_signal( data_short, last_data, fresh_data, long_fresh_data, flag ):
+        p = 1
+        pp = 0
+        if TRADE_STYLE == 2:
+            signal = breakout_scal( data_short,last_data, fresh_data, long_fresh_data)
+        else:
+            signal = breakout( data_short,last_data, fresh_data, long_fresh_data)
+
+        if signal["side"] == "BUY":
+            flag = log_price(data_short,flag)
+            flag["records"]["log"].append("過去{0}足の最高値{1}円を、直近の高値が{2}円でブレイク\n".format(TERM_IN,signal["price"],data["high_price"]))
+            flag["records"]["log"].append(str(data_short["close_price"]) + "円で買いの指値注文\n")
+            if BACKTEST == 0:
+                print("高値ブレイクによるエントリー")
+
+            # ここに買い注文のコードを入れる
+            if(BACKTEST == 0 and TRADE_OFF == 0):
+                data1 = {
+                    "order": {
+                        "instrument"  : INSTRUMENT,
+                        "units"       : UNITS,
+                        "type"        : "MARKET"
+                    }
+                }
+                r = orders.OrderCreate(account_id, data=data1)
+                rsp = oanda.request(r)
+                print(json.dumps(rsp, indent=2))
+
+            flag["order"]["exist"] = True
+            flag["order"]["side"]  = "BUY"
+            flag["order"]["price"] = data_short["close_price"]
+            p  *= 2
+            pp += 1
+
+        if signal["side"] == "SELL":
+            flag = log_price(data_short,flag)
+            flag["records"]["log"].append("過去{0}足の最安値{1}円を、直近の安値が{2}円でブレイク\n".format(TERM_IN,signal["price"],data["low_price"]))
+            flag["records"]["log"].append(str(data_short["close_price"]) + "円で売りの指値注文\n")
+            if BACKTEST == 0:
+                print("安値ブレイクによるエントリー")
+
+            # ここに売り注文のコードを入れる
+            if(BACKTEST == 0 and TRADE_OFF == 0):
+                data1 = {
+                    "order": {
+                        "instrument"  : INSTRUMENT,
+                        "units"       : -1 * UNITS,
+                        "type"        : "MARKET"
+                    }
+                }
+                r = orders.OrderCreate(account_id, data=data1)
+                rsp = oanda.request(r)
+                print(json.dumps(rsp, indent=2))
+
+            flag["order"]["exist"] = True
+            flag["order"]["side"]  = "SELL"
+            flag["order"]["price"] = data_short["close_price"]
+            p  *= 3
+            pp += 1
+
+
+        if TRADE_STYLE == 2:
+            signal = support_scal( data_short,last_data, fresh_data, long_fresh_data)
+        else:
+            signal = support( data_short,last_data, fresh_data, long_fresh_data)
+
+        if signal["side"] == "SELL":
+            flag = log_price(data_short,flag)
+            flag["records"]["log"].append("過去{0}足の最高値{1}円を、直近の高値が{2}円でサポート\n".format(TERM_IN,signal["price"],data["high_price"]))
+            flag["records"]["log"].append(str(data_short["close_price"]) + "円で売りの指値注文\n")
+            if BACKTEST == 0:
+                print("高値サポートによるエントリー")
+
+            # 売り注文
+            if(BACKTEST == 0 and TRADE_OFF == 0):
+                data1 = {
+                    "order": {
+                        "instrument"  : INSTRUMENT,
+                        "units"       : -1 * UNITS,
+                        "type"        : "MARKET"
+                    }
+                }
+                r   = orders.OrderCreate(account_id, data=data1)
+                rsp = oanda.request(r)
+                print(json.dumps(rsp, indent=2))
+
+
+            flag["order"]["exist"] = True
+            flag["order"]["side"]  = "SELL"
+            flag["order"]["price"] = data_short["close_price"]
+            p  *= 5
+            pp += 1
+
+        if signal["side"] == "BUY":
+            flag = log_price(data_short,flag)
+            flag["records"]["log"].append("過去{0}足の最安値{1}円を、直近の安値が{2}円でサポート\n".format(TERM_IN,signal["price"],data["low_price"]))
+            flag["records"]["log"].append(str(data_short["close_price"]) + "円で買いの指値注文\n")
+            if BACKTEST == 0:
+                print("安値サポートによるエントリー")
+
+            # 買い注文
+            if(BACKTEST == 0 and TRADE_OFF == 0):
+                data1 = {
+                    "order": {
+                        "instrument"  : INSTRUMENT,
+                        "units"       : UNITS,
+                        "type"        : "MARKET"
+                    }
+                }
+                r   = orders.OrderCreate(account_id, data=data1)
+                rsp = oanda.request(r)
+                print(json.dumps(rsp, indent=2))
+
+            flag["order"]["exist"] = True
+            flag["order"]["side"]  = "BUY"
+            flag["order"]["price"] = data_short["close_price"]
+            p  *= 7
+            pp += 1
+
+        if pp > 1:
+            print("worning : entry (%d)" % p , data_short["close_time"])
+        return flag
+
+    # 手仕舞いのシグナルが出たら決済の成行注文を出す関数
+    def close_position( data_short,last_data, fresh_data, long_fresh_data, flag ):
+        if flag["position"]["quote"] == False:
+            flag = quotation(data_short, flag)
+        elif flag["position"]["side"] == "BUY" and data_short["low_price"] - flag["position"]["price"] < QUOTE_WIDTH:
+            records( flag,data_short )
+            flag["position"]["exist"] = False
+            flag["position"]["count"] = 0
+            flag["position"]["quote"] = False
+            print("指値決済1")
+            return flag
+        elif flag["position"]["side"] == "SELL" and data_short["high_price"] - flag["position"]["price"] > -QUOTE_WIDTH:
+            records( flag,data_short )
+            flag["position"]["exist"] = False
+            flag["position"]["count"] = 0
+            flag["position"]["quote"] = False
+            print("指値決済2")
+            return flag
+
+        p  = 1
+        pp = 0
+        flag["position"]["count"] += 1
+        if TRADE_STYLE == 2:
+            signal = breakout_scal_exe( data_short, last_data, long_fresh_data )
+        else:
+            signal = breakout_exe( data_short, last_data, long_fresh_data )
+
+        if flag["position"]["side"] == "BUY":
+            if signal["side"] == "SELL":
+                flag = log_price(data_short,flag)
+                flag["records"]["log"].append("過去{0}足の最安値{1}円を、直近の安値が{2}円でブレイク\n".format(TERM_OUT,signal["price"],data["low_price"]))
+                flag["records"]["log"].append(str(data_short["close_price"]) + "円あたりで成行注文を出してポジションを決済\n")
+
+                # 決済の成行注文
+                if(BACKTEST == 0 and TRADE_OFF == 0):
+                    position_data = { "shortUnits": "ALL" }
+                    r = positions.PositionClose( account_id, data=position_data, instrument=INSTRUMENT )
+                    rsp = oanda.request(r)
+                    print(json.dumps(rsp, indent=2))
+
+                flag["position"]["quote"] = False
+                records( flag,data_short )
+                flag["position"]["exist"] = False
+                flag["position"]["count"] = 0
+                p  *= 2
+                pp += 1
+
+        if flag["position"]["side"] == "SELL":
+            if signal["side"] == "BUY":
+                flag = log_price(data_short,flag)
+                flag["records"]["log"].append("過去{0}足の最高値{1}円を、直近の高値が{2}円でブレイク\n".format(TERM_OUT,signal["price"],data["high_price"]))
+                flag["records"]["log"].append(str(data_short["close_price"]) + "円あたりで成行注文を出してポジションを決済\n")
+
+                # 決済の成行注文コード
+                if(BACKTEST == 0 and TRADE_OFF == 0):
+                    position_data = { "longUnits": "ALL" }
+                    r = positions.PositionClose( account_id, data=position_data, instrument=INSTRUMENT )
+                    rsp = oanda.request(r)
+                    print(json.dumps(rsp, indent=2))
+
+                flag["position"]["quote"] = False
+                records( flag,data_short )
+                flag["position"]["exist"] = False
+                flag["position"]["count"] = 0
+                p  *= 3
+                pp += 1
+
+        if TRADE_STYLE == 2:
+            signal = support_scal_exe( data_short,last_data, fresh_data, long_fresh_data)
+        else:
+            signal = support_exe( data_short,last_data, fresh_data, long_fresh_data)
+
+        if flag["position"]["side"] == "SELL":
+            if signal["side"] == "BUY":
+                flag = log_price(data_short,flag)
+                flag["records"]["log"].append("過去{0}足の最安値{1}円を、直近の安値が{2}円でサポート\n".format(TERM_OUT,signal["price"],data["low_price"]))
+                flag["records"]["log"].append(str(data_short["close_price"]) + "円あたりで成行注文を出してポジションを決済\n")
+
+                # 決済の成行注文
+                if(BACKTEST == 0 and TRADE_OFF == 0):
+                    position_data = { "longUnits": "ALL" }
+                    r = positions.PositionClose( account_id, data=position_data, instrument=INSTRUMENT )
+                    rsp = oanda.request(r)
+                    print(json.dumps(rsp, indent=2))
+
+                flag["position"]["quote"] = False
+                records( flag,data_short )
+                flag["position"]["exist"] = False
+                flag["position"]["count"] = 0
+                p  *= 5
+                pp += 1
+
+        if flag["position"]["side"] == "BUY":
+            if signal["side"] == "SELL":
+                flag = log_price(data_short,flag)
+                flag["records"]["log"].append("過去{0}足の最高値{1}円を、直近の高値が{2}円でサポート\n".format(TERM_OUT,signal["price"],data["high_price"]))
+                flag["records"]["log"].append(str(data_short["close_price"]) + "円あたりで成行注文を出してポジションを決済\n")
+
+                # 決済の成行注文
+                if(BACKTEST == 0 and TRADE_OFF == 0):
+                    position_data = { "shortUnits": "ALL" }
+                    r = positions.PositionClose( account_id, data=position_data, instrument=INSTRUMENT )
+                    rsp = oanda.request(r)
+                    print(json.dumps(rsp, indent=2))
+
+                flag["position"]["quote"] = False
+                records( flag,data_short )
+                flag["position"]["exist"] = False
+                flag["position"]["count"] = 0
+                p  *= 7
+                pp += 1
+
+        if pp > 1:
+            print("worning : exit %d" % p)
+        return flag
+
+
+    def quotation(data_short, flag):
+        if flag["position"]["side"] == "BUY":
+            if data_short["close_price"] - flag["position"]["price"] > 0.5:
+                limit_price = flag["position"]["price"] + QUOTE_WIDTH
+                # 建値で指値注文
+                print("指値注文1 :", data_short["close_time"], data_short["close_price"], flag["position"]["price"])
+                if (BACKTEST == 0 and TRADE_OFF == 0):
+                    position_data = {
+                        "order": {
+                            "price"       : limit_price,
+                            "instrument"  : INSTRUMENT,
+                            "units"       : -1 * UNITS,
+                            "type"        : "STOP",
+                            "positionFill": "DEFAULT"
+                        }
+                    }
+                    r = orders.OrderCreate(account_id, data=position_data)
+                    rsp = oanda.request(r)
+                    print(json.dumps(rsp, indent=2))
+                flag["position"]["quote"] = True
+
+        if flag["position"]["side"] == "SELL":
+            if (data_short["close_price"] - flag["position"]["price"]) < -0.5:
+                limit_price = flag["position"]["price"] - QUOTE_WIDTH
+                # 建値で指値注文
+                print("指値注文2 :", data_short["close_time"], data_short["close_price"], flag["position"]["price"])
+                if (BACKTEST == 0 and TRADE_OFF == 0):
+                    position_data = {
+                        "order": {
+                            "price"       : limit_price,
+                            "instrument"  : INSTRUMENT,
+                            "units"       : UNITS,
+                            "type"        : "STOP",
+                            "positionFill": "DEFAULT"
+                        }
+                    }
+                    r = orders.OrderCreate(account_id, data=position_data)
+                    rsp = oanda.request(r)
+                    print(json.dumps(rsp, indent=2))
+                flag["position"]["quote"] = True
+
+        return flag
+
+
+    # サーバーに出した注文が約定したかどうかチェックする関数
+    def check_order( flag ):
+
+        # 注文状況を確認して通っていたら以下を実行
+        # 一定時間で注文が通っていなければキャンセルする
+
+        flag["order"]["exist"]    = False
+        flag["order"]["count"]    = 0
+        flag["position"]["exist"] = True
+        flag["position"]["side"]  = flag["order"]["side"]
+        flag["position"]["price"] = flag["order"]["price"]
+
+        return flag
+
+
+    # 各トレードのパフォーマンスを記録する関数
+    def records(flag, data_short):
+        # 取引手数料等の計算
+        entry_price = flag["position"]["price"]
+        if flag["position"]["quote"] == False:
+            exit_price = data_short["close_price"]
+        elif flag["position"]["quote"] == True and flag["position"]["side"] == "BUY":
+            exit_price = entry_price + (QUOTE_WIDTH)
+            print("aaa")
+        elif flag["position"]["quote"] == True and flag["position"]["side"] == "SELL":
+            exit_price = entry_price - (QUOTE_WIDTH)
+            print("bbb")
+
+        trade_cost  = ((slippage + SPREAD) / PIPS_ADJUST)   # yen
+
+        log = "スリッページ・手数料として " + str(trade_cost) + "pipsを考慮\n"
+        flag["records"]["log"].append(log)
+        flag["records"]["slippage"].append(round(trade_cost * lot))
+
+        # 値幅の計算
+        buy_profit  = round((exit_price - entry_price - trade_cost) * lot * 100 / PIPS_ADJUST)
+        sell_profit = round((entry_price - exit_price - trade_cost) * lot)
+
+        # 利益が出てるかの計算
+        if flag["position"]["side"] == "BUY":
+            flag["records"]["buy-count"] += 1
+            flag["records"]["buy-profit"].append( buy_profit )
+            flag["records"]["buy-return"].append( round( buy_profit / entry_price * 100, 4 ))
+            flag["records"]["buy-holding-periods"].append( flag["position"]["count"] )
+            if buy_profit  > 0:
+                flag["records"]["buy-winning"] += 1
+                log = str(buy_profit) + "円の利益\n"
+                flag["records"]["log"].append(log)
+            else:
+                log = str(buy_profit) + "円の損失\n"
+                flag["records"]["log"].append(log)
+
+        if flag["position"]["side"] == "SELL":
+            flag["records"]["sell-count"] += 1
+            flag["records"]["sell-profit"].append( sell_profit )
+            flag["records"]["sell-return"].append( round( sell_profit / entry_price * 100, 4 ))
+            flag["records"]["sell-holding-periods"].append( flag["position"]["count"] )
+            if sell_profit > 0:
+                flag["records"]["sell-winning"] += 1
+                log = str(sell_profit) + "円の利益\n"
+                flag["records"]["log"].append(log)
+            else:
+                log = str(sell_profit) + "円の損失\n"
+                flag["records"]["log"].append(log)
+
+        return flag
+
+
+    # バックテストの集計用の関数
+    def backtest(flag):
+        buy_gross_profit = np.sum(flag["records"]["buy-profit"])
+        sell_gross_profit = np.sum(flag["records"]["sell-profit"])
+
+        print("バックテストの結果")
+        print("--------------------------")
+        print("買いエントリの成績")
+        print("--------------------------")
+        print("トレード回数  :  {}回".format(flag["records"]["buy-count"] ))
+        if (flag["records"]["buy-count"] > 0):
+            print("勝率          :  {}％".format(round(flag["records"]["buy-winning"] / flag["records"]["buy-count"] * 100,1)))
+            print("平均リターン  :  {}％".format(round(np.average(flag["records"]["buy-return"]),4)))
+            print("総損益        :  {}円".format( np.sum(flag["records"]["buy-profit"]) ))
+            print("平均保有期間  :  {}足分".format( round(np.average(flag["records"]["buy-holding-periods"]),1) ))
+
+        print("--------------------------")
+        print("売りエントリの成績")
+        print("--------------------------")
+        print("トレード回数  :  {}回".format(flag["records"]["sell-count"] ))
+        if (flag["records"]["sell-count"] > 0):
+            print("勝率          :  {}％".format(round(flag["records"]["sell-winning"] / flag["records"]["sell-count"] * 100,1)))
+            print("平均リターン  :  {}％".format(round(np.average(flag["records"]["sell-return"]),4)))
+            print("総損益        :  {}円".format( np.sum(flag["records"]["sell-profit"]) ))
+            print("平均保有期間  :  {}足分".format( round(np.average(flag["records"]["sell-holding-periods"]),1) ))
+
+        print("--------------------------")
+        print("総合の成績")
+        print("--------------------------")
+        print("総損益        :  {}円".format( np.sum(flag["records"]["sell-profit"]) + np.sum(flag["records"]["buy-profit"]) ))
+        print("手数料合計    :  {}円".format( np.sum(flag["records"]["slippage"]) ))
+
+        if LOG == 1:
+            # ログファイルの出力
+            file =  open(log_file.txt)
+            file.writelines(flag["records"]["log"])
+
+
+    flag = {
+        "buy_signal" :0,
+        "sell_signal":0,
+        "order":{
+            "exist" : False,
+            "side"  : "",
+            "price" : 0,
+            "count" : 0
+        },
+        "position":{
+            "exist" : False,   # positionを持つ時のみ"True"
+            "side"  : "",
+            "price" : 0,
+            "quote" : False,
+            "count" : 0
+        },
+        "records":{
+            "buy-count"   : 0,
+            "buy-winning" : 0,
+            "buy-return"  :[],
+            "buy-profit"  : [],
+            "buy-holding-periods":[],
+
+            "sell-count"   : 0,
+            "sell-winning" : 0,
+            "sell-return"  :[],
+            "sell-profit"  :[],
+            "sell-holding-periods":[],
+
+            "slippage":[],
+            "log":[]
+        }
+    }
+
+    if BACKTEST == 0:
+        if RESTART == 1:
+            print("RESTART")
+            if signal["side"] == "BUY":
+                print("Restart Condition : ")
+            restart_ini      = configparser.ConfigParser(inline_comment_prefixes=('#', ';'))
+            restart_ini_path = './restart.txt'
+
+            if not os.path.exists(restart_ini_path):
+                raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), restart_ini_path)
+
+            restart_ini.read(restart_ini_path, encoding='utf-8')
+
+            restart_set         = restart_ini['SETTING']
+            flag["buy_signal"]  = restart_set.getint('buy_signal')
+            flag["sell_signal"] = restart_set.getint('sell_signal')
+            flag["order"]       = restart_set.get('order')
+            flag["position"]    = restart_set.get('order')
+
+
+        long_data, long_fresh_data = [], []
+        last_data, fresh_data      = [], []
+        profit = []
+        total  = 0
+        j_buy, j_sell = 0, 0
+        i = 0
+        t = 0
+        time_step = 0
+        # 価格チャートを取得
+        price_long  = get_price(CANDLE_LONG, 100)
+        price       = get_price(CANDLE_BASE, 100)
+        price_short = get_price(CANDLE_SHORT, 100)
+
+        while i < len(price_long):
+            #ブレイクアウト判定に使う最低限ｎ期間分のローソク足をセット
+            long_data.append(price_long[i])
+            if i == len(price_long) - 1:
+                price_long = get_price(CANDLE_LONG, 1)
+                data_long  = price_long[0]
+            i += 1
+
+        i = 0
+        while i < len(price):
+            #ブレイクアウト判定に使う最低限ｎ期間分のローソク足をセット
+            last_data.append(price[i])
+            if i == len(price) - 1:
+                price = get_price(CANDLE_BASE, 1)
+                data  = price[0]
+            i += 1
+
+        try:
+            while True:
+                price_long  = get_price(CANDLE_LONG, 1)
+                price       = get_price(CANDLE_BASE, 1)
+                price_short = get_price(CANDLE_SHORT, 1)
+                spread      = (float(Response_Body["prices"][0]["asks"][0]["price"]) - float(Response_Body['prices'][0]['bids'][0]['price'])) * PIPS_ADJUST
+                print("データ更新  TIME STEP : {}, SPREAD : {:.3f} pips".format(time_step, spread))
+
+                data_long   = price_long[0]
+                data        = price[0]
+                data_short  = price_short[0]
+
+                price_short = get_price(CANDLE_SHORT, 1)
+
+
+                ##### lond足を更新 #####
+                if data_long["close_time"] > long_data[-1]["close_time"]:
+                    long_data.append( data_long )
+                    print(CANDLE_LONG,"足を更新")
+
+                long_fresh_data.clear()
+                long_fresh_data = copy.copy(long_data)
+                if price_long[0]["close_time"] < price_short[0]["close_time"]:
+                    long_fresh_data.append(price_short[0])
+
+                ##### 基本足を更新 #####
+                if data["close_time"] > last_data[-1]["close_time"]:
+                    last_data.append( data )
+                    print(CANDLE_BASE,"足を更新")
+
+                fresh_data.clear()
+                fresh_data = copy.copy(last_data)
+                if price[0]["close_time"] < price_short[0]["close_time"]:
+                    fresh_data.append(price_short[0])
+
+                ##### 実計算 #####
+
+                if price_short[0]["close_time"] > data_short["close_time"] or t == 0:
+                    data_short = price_short[0]
+                    if flag["order"]["exist"]: # 未約定の注文がないかチェック
+                        flag = check_order( flag )
+                    elif flag["position"]["exist"] and SPREAD * 3 > spread:
+                        #ポジションがあれば決済条件を満たしていないかチェック
+                        flag = close_position( data_short, last_data, fresh_data, long_fresh_data, flag )
+                    elif SPREAD * 3 > spread:
+                        #ポジションが無い場合はエントリー条件を満たしているかチェック
+                        flag = entry_signal( data_short, last_data, fresh_data, long_fresh_data, flag )
+
+                    if len(flag["records"]["buy-profit"]) > j_buy:
+                        total += flag["records"]["buy-profit"][j_buy]
+                        j_buy += 1
+                    if len(flag["records"]["sell-profit"]) > j_sell:
+                        total += flag["records"]["sell-profit"][j_sell]
+                        j_sell += 1
+
+                    t = 1
+
+                time_step += 1
+
+                time.sleep(STEP)
+
+        except KeyboardInterrupt:
+            with open('restart.txt', 'w') as f:
+                print('[SETTING]', file=f)
+                print('buy_signal  = ',flag["buy_signal"], file=f)
+                print('sell_signal = ',flag["sell_signal"], file=f)
+                print('order       = ',flag["order"], file=f)
+                print('position    = ',flag["position"], file=f)
+            print("\nfin")
+
+
+    if BACKTEST == 1:
+        # 価格チャートを取得
+        price_long  = get_price(CANDLE_LONG, 1100)
+        price       = get_price(CANDLE_BASE, 2000)
+        price_short = get_price(CANDLE_SHORT, 3000)
+
+        print("--------------------------")
+        print("テスト期間：")
+        print("開始時点 : " + str(price[0]["close_time"]))
+        print("終了時点 : " + str(price[-1]["close_time"]))
+        print(str(len(price)) + "件のローソク足データで検証")
+        print("--------------------------")
+
+
+        long_data, long_fresh_data = [], []
+        last_data, fresh_data      = [], []
+        ma25_data, ma75_data       = [], []
+        rsi_data, rsi_long_data    = [], []
+        macd_data, signal_data     = [], []
+        fig_data    = []
+        profit      = []
+        time_out    = []
+        time_out1   = []
+        time_out2   = []
+        time1, time2, time3, time4 = [], [], [], []
+        macd1, macd2, macd3, macd4 = [], [], [], []
+        buy_entry_price, sell_entry_price, buy_entry_time, sell_entry_time  = [], [], [], []
+        buy_exit_price, sell_exit_price, buy_exit_time, sell_exit_time      = [], [], [], []
+        buy_check  = 0
+        sell_check = 0
+        high_data  = 0
+        total      = 0
+        j_buy, j_sell = 0, 0
+        i = 0
+        j = 0
+        k = 0
+        while k < len(price_long):
+            #ブレイクアウト判定に使う最低限ｎ期間分のローソク足をセット
+            if len(long_data) < 30:
+                long_data.append(price_long[k])
+                k += 1
+                continue
+
+            if i == 0 and price_long[k]["close_time"] > price[0]["close_time"]:
+                print("error : ")
+                sys.exit()
+
+            if k+1 < len(price_long) and price_long[k+1]["close_time"] <= price[i]["close_time"]:
+                long_data.append( price_long[k] )
+                k += 1
+                continue
+
+            long_data.append(price_long[k])
+            while ((k+1 < len(price_long) and price_long[k+1]["close_time"] > price[i]["close_time"]) and i < len(price)):
+                #ブレイクアウト判定に使う最低限ｎ期間分のローソク足をセット
+                if len(last_data) < 100:
+                    last_data.append(price[i])
+                    i += 1
+                    continue
+
+                data = price[i]
+
+                if i+1 < len(price) and price[i+1]["close_time"] <= price_short[j]["close_time"]:
+                    last_data.append( data )
+                    i += 1
+                    continue
+
+                last_data.append( data )
+
+                while ((i+1 < len(price) and price[i+1]["close_time"] > price_short[j]["close_time"]) and j < len(price_short)):
+                    fresh_data.clear()
+                    fresh_data     = copy.copy(last_data)
+                    if price[i]["close_time"] < price_short[j]["close_time"]:
+                        fresh_data.append(price_short[j])
+
+                    long_fresh_data.clear()
+                    long_fresh_data     = copy.copy(long_data)
+                    if price_long[k]["close_time"] < price_short[j]["close_time"]:
+                        long_fresh_data.append(price_short[j])
+
+                    data_short = price_short[j]
+
+                    if flag["order"]["exist"]: # 未約定の注文がないかチェック
+                        flag = check_order( flag )
+                    elif flag["position"]["exist"]:
+                        #ポジションがあれば決済条件を満たしていないかチェック
+                        flag = close_position(data_short, last_data, fresh_data, long_fresh_data, flag )
+                    else:
+                        #ポジションが無い場合はエントリー条件を満たしているかチェック
+                        flag = entry_signal(data_short, last_data, fresh_data, long_fresh_data, flag)
+
+                    if flag["order"]["side"] == "BUY" and flag["order"]["exist"] == True:
+                        buy_entry_price.append(price_short[j]["close_price"])
+                        buy_entry_time.append(price_short[j]["close_time"])
+                    if flag["order"]["side"] == "SELL" and flag["order"]["exist"] == True:
+                        sell_entry_price.append(price_short[j]["close_price"])
+                        sell_entry_time.append(price_short[j]["close_time"])
+
+                    if len(flag["records"]["buy-profit"]) > j_buy:
+                        total += flag["records"]["buy-profit"][j_buy]
+                        buy_exit_price.append(price_short[j]["close_price"])
+                        buy_exit_time.append(price_short[j]["close_time"])
+                        j_buy += 1
+                    if len(flag["records"]["sell-profit"]) > j_sell:
+                        total += flag["records"]["sell-profit"][j_sell]
+                        sell_exit_price.append(price_short[j]["close_price"])
+                        sell_exit_time.append(price_short[j]["close_time"])
+                        j_sell += 1
+
+                    time_out1.append(price_short[j]["close_time"])
+                    fig_data.append(price_short[j]["close_price"])
+                    rsi_data.append(RSI(fresh_data, 0))
+                    rsi_long_data.append(RSI(long_fresh_data, 0))
+                    j += 1
+
+                ma25_data.append(EMA(last_data, 25, 0))
+                ma75_data.append(EMA(last_data, 75, 0))
+                macd, signal = MACD(last_data, 0)
+                macd_data.append(macd)
+                signal_data.append(signal)
+
+                profit.append(total)
+                time_out.append(price[i]["close_time"])
+                i += 1
+            k += 1
+
+        backtest(flag)
+
+        highest = max(fig_data) + (max(fig_data) - min(fig_data)) * 0.01
+        lowest  = min(fig_data) - (max(fig_data) - min(fig_data)) * 0.01
+
+        ##### (311) #####
+        fig = plt.figure(figsize=(14, 8))
+        plt.rcParams["xtick.direction"] = "in"
+        plt.rcParams["ytick.direction"] = "in"
+        plt.rcParams["xtick.minor.visible"] = True           #x軸補助目盛りの追加
+        plt.rcParams["ytick.minor.visible"] = True           #y軸補助目盛りの追加
+        ax1 = fig.add_subplot(311)
+        ax1.plot(time_out1, fig_data, color='0.7')
+        plt.subplots_adjust(left=0.05, right=0.95, bottom=0.05, top=0.95)
+        ax2 = ax1.twinx()
+        ax2.plot(time_out, profit, color='y')
+        ax3 = ax2.twinx()
+        ax3.plot(time_out, ma75_data, color='orange')
+        ax4 = ax3.twinx()
+        ax4.plot(time_out, ma25_data, color='green')
+        ax5 = ax4.twinx()
+        ax5.scatter(buy_entry_time, buy_entry_price, color='r', marker='o')
+        ax6 = ax5.twinx()
+        ax6.scatter(sell_entry_time, sell_entry_price, color='b', marker='o')
+        ax7 = ax6.twinx()
+        ax7.scatter(buy_exit_time, buy_exit_price, color='b', marker='+')
+        ax8 = ax7.twinx()
+        ax8.scatter(sell_exit_time, sell_exit_price, color='r', marker='+')
+
+        ax1.set_ylabel(INSTRUMENT)
+        ax1.grid(b=True, which='major', color='#666666', linestyle='-')
+        ax1.minorticks_on()
+        ax1.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
+        ax2.yaxis.tick_right()
+        ax1.set_ylim(lowest,highest)
+        ax3.set_ylim(lowest,highest)
+        ax4.set_ylim(lowest,highest)
+        ax5.set_ylim(lowest,highest)
+        ax6.set_ylim(lowest,highest)
+        ax7.set_ylim(lowest,highest)
+        ax8.set_ylim(lowest,highest)
+        ax3.axes.yaxis.set_visible(False)
+        ax4.axes.yaxis.set_visible(False)
+        ax5.axes.yaxis.set_visible(False)
+        ax6.axes.yaxis.set_visible(False)
+        ax7.axes.yaxis.set_visible(False)
+        ax8.axes.yaxis.set_visible(False)
+
+
+        ##### (312) #####
+        ax10 = fig.add_subplot(312)
+        ax10.plot(time_out1, rsi_long_data, color='r')
+        ax11 = ax10.twinx()
+        ax11.plot(time_out1, rsi_data, color='b')
+        ax10.grid(b=True, which='major', color='#666666', linestyle='-')
+        ax10.minorticks_on()
+        ax10.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
+        ax10.set_ylim(0,100)
+        ax10.set_ylabel("RSI")
+
+
+        ##### (313) #####
+        macdnp = np.array(macd_data) - np.array(signal_data)
+        i = 0
+        while i < len(macdnp):
+            if macdnp[i] >= 0 and macdnp[i] - macdnp[i-1] >= 0:
+                time1.append(time_out[i])
+                macd1.append(macdnp[i]*1.0)
+            elif macdnp[i] >= 0 and macdnp[i] - macdnp[i-1] < 0:
+                time2.append(time_out[i])
+                macd2.append(macdnp[i]*1.0)
+            elif macdnp[i] < 0 and macdnp[i] - macdnp[i-1] > 0:
+                time3.append(time_out[i])
+                macd3.append(macdnp[i]*1.0)
+            elif macdnp[i] < 0 and macdnp[i] - macdnp[i-1] <= 0:
+                time4.append(time_out[i])
+                macd4.append(macdnp[i]*1.0)
+            i += 1
+
+        if TRADE_STYLE == 2:
+            width = 0.01
+        else:
+            width = 0.17
+
+        ax20 = fig.add_subplot(313)
+        ax20.bar(time1, macd1, width=width, color='green')
+        ax21 = ax20.twinx()
+        ax21.bar(time2, macd2, width=width, color='lightgreen')
+        ax22 = ax21.twinx()
+        ax22.bar(time3, macd3, width=width, color='pink')
+        ax23 = ax22.twinx()
+        ax23.bar(time4, macd4, width=width, color='red')
+        ax24 = ax23.twinx()
+        ax24.plot(time_out, macd_data, color='b')
+        ax25 = ax24.twinx()
+        ax25.plot(time_out, signal_data, color='r')
+        ax20.grid(b=True, which='major', color='#666666', linestyle='-')
+        ax20.minorticks_on()
+        ax20.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
+        ax20.set_xlabel("t")
+        ax20.set_ylabel("MACD")
+        macd_high = max(macd_data) * 1.05
+        macd_low  = min(macd_data) * 1.05
+        ax20.set_ylim(macd_low,macd_high)
+        ax21.set_ylim(macd_low,macd_high)
+        ax22.set_ylim(macd_low,macd_high)
+        ax23.set_ylim(macd_low,macd_high)
+        ax24.set_ylim(macd_low,macd_high)
+        ax25.set_ylim(macd_low,macd_high)
+        ax21.axes.yaxis.set_visible(False)
+        ax22.axes.yaxis.set_visible(False)
+        ax23.axes.yaxis.set_visible(False)
+        ax24.axes.yaxis.set_visible(False)
+        ax25.axes.yaxis.set_visible(False)
+
+        fig.savefig("./figure/graf.png")
+        plt.close()
+
+
+    if BACKTEST == 10:
+        while True:
+            if flag["order"]["exist"]:
+                flag = check_order( flag )
+
+            data = get_price("M1")
+            if data["close_time"] != last_data["close_time"]:
+                print_price( data )
+                if flag["position"]["exist"]:
+                    flag = close_position( data,last_data,flag )
+
+                else:
+                    flag = buy_signal( data,flag )
+                    flag = sell_signal( data,flag )
+
+                last_data = data
+            print("aaa")
+            time.sleep(10)</code></pre>
+      </div>
+
+  <br>
+  <li id="trade_param">パラメータファイル</li>
+
+  <!-- \begin{align}
+  \mathrm{MACD} &= 短期\mathrm{EMA}_{(k)} - 長期\mathrm{EMA}_{(k)} \\
+  \mathrm{SIGNAL} &= \frac{1}{n} \sum_{i=0}^{n-1} \mathrm{MACD}_{(k)}
+  \end{align} -->
+
+  <div style="width: 95%; height: 600px; overflow-x: scroll; overflow-x: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
+    <pre><code class="prettyprint linenums">    [DEFAULT]
+    account_id     = XXX-XXX-XXXXXXXX-XXX
+    api_key        = xxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxx
+
+    [MODE]
+    BACKTEST       = 0
+    TRADE_OFF      = 0
+    STEP           = 300     # time renewal [sec]
+    TRADE_STYLE    = 1       # 1 : day trade , 2 : scalping
+    # MODE :: 1 : ORDER, 2 : CANCEL, 3 : STOP
+    MODE           = 3
+    # ORDER_ID :: the case MODE=2, this value is used
+    ORDER_ID       = 70
+    RESTART        = 0
+    LOAD_DATA      = 0
+    load_file1     = ./long_data.txt
+    load_file2     = ./short_data.txt
+    LOG            = 0
+    LOG_FILE       = ./log.txt
+
+    [ORDER]
+    # http://trend.outlooks.space/?p=4304
+    # INSTRUMENT     = USD_JPY
+    INSTRUMENT     = EUR_JPY
+    # INSTRUMENT     = AUD_JPY
+    # INSTRUMENT     = GBP_JPY
+    # INSTRUMENT     = EUR_GBP
+    PRICE          = 109.650
+    UNITS          = 10000
+    # order type : MARKET(成行), LIMIT(指値), STOP(逆指値)
+    TYPE           = LIMIT
+
+    [SETTING]
+    # CANDLE_LONG    = H8
+    # CANDLE_BASE    = H1
+    # CANDLE_SHORT   = M15
+    LOT            = 10000
+    SLIPPAGE       = 0.3
+    # QUOTE_WIDTH    = 0.01
+    # TERM_IN        = 20
+    # TERM_OUT       = 10
+    # TERM_SUP_IN    = 80
+    # TERM_SUP_OUT   = 20
+    # SUPPORT_IGNORE = 10
+
+    # [PARAMETER]
+    # RSI_BIN        = 14
+    # MACD_SLOW      = 26
+    # MACD_FAST      = 12
+    # SIGNAL_SMOOTH  = 9
+    # STOCH_K        = 14
+    # STOCH_D        = 3
+
+
+    #
+    #  parameter scale table
+    #
+    #  MACD
+    #          period1  period2  signal
+    #  short :    6       19       9
+    #  medle :   12       26       9
+    #  long  :   19       39       9
+    #
+
+    [SCAL_SETTING]
+    CANDLE_LONG    = M30
+    CANDLE_BASE    = M15
+    CANDLE_SHORT   = M1
+    QUOTE_WIDTH    = 0.01
+    TERM_IN        = 20
+    TERM_OUT       = 10
+    TERM_SUP_IN    = 80
+    TERM_SUP_OUT   = 20
+
+    # indicate parameter
+    RSI_BIN        = 14
+    MACD_SLOW      = 6
+    MACD_FAST      = 19
+    SIGNAL_SMOOTH  = 9
+    STOCH_K        = 14
+    STOCH_D        = 3
+
+    # code threshold
+    RSI_TOP        = 95
+    RSI_BOTTOM     = 5
+
+
+    [DAY_SETTING]
+    CANDLE_LONG    = D
+    CANDLE_BASE    = H2
+    CANDLE_SHORT   = M10
+    QUOTE_WIDTH    = 0.01
+    TERM_IN        = 20
+    TERM_OUT       = 10   # aaa
+    TERM_SUP_IN    = 80
+    TERM_SUP_OUT   = 20
+
+    # code threshold
+    RSI_TOP        = 90
+    RSI_BOTTOM     = 10
+
+    RSI_BIN        = 14
+    MACD_SLOW      = 26
+    MACD_FAST      = 12
+    SIGNAL_SMOOTH  = 9
+    STOCH_K        = 14
+    STOCH_D        = 3</code></pre>
+  </div>
+
+
+  <br>
+  <li id="trade_currency">標準スプレッド</li>
+  <p>エントリーの条件が揃ってもスプレッドが大きければ、そのポジションは弱くなってしまう。
+  そこで、取引所の標準的なスプレッドに対して、現在のスプレッドが数倍に広がってしまっているときにエントリーを見送る。</p>
+  <!-- \begin{align}
+  \mathrm{EMA}_{(1)} &= \frac{1}{n} \sum_{i=0}^{n-1} 終値(i) \\
+  \mathrm{EMA}_{(k)} &= \mathrm{EMA}_{(k-1)} + \frac{2}{n+1} \times (終値 - \mathrm{EMA}_{(k-1)}) \ \ \ \ \ (k \geq 2)
+  \end{align} -->
+  <div style="width: 95%; overflow-x: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
+    <pre><code class="prettyprint linenums">  [USD_JPY]
+  SPREAD      = 0.17
+  PIPS_ADJUST = 100
+  [EUR_JPY]
+  SPREAD      = 0.49
+  PIPS_ADJUST = 100
+  [GBP_JPY]
+  SPREAD      = 0.99
+  PIPS_ADJUST = 100
+  [AUD_JPY]
+  SPREAD      = 0.69
+  PIPS_ADJUST = 100
+  [NZD_JPY]
+  SPREAD      = 1.19
+  PIPS_ADJUST = 100
+  [EUR_USD]
+  SPREAD      = 0.38
+  PIPS_ADJUST = 10000
+  [GBP_USD]
+  SPREAD      = 0.89
+  PIPS_ADJUST = 10000</code></pre>
+      </div>
+    </ol>
+  </div>
+  <!-- <script src="./google-code-prettify/prettify.js"></script>
+  <script>prettyPrint();</script> -->
+
+  <br><br><br><br>
+
+
+
+</body>
+
+</html>

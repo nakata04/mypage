@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="./cp_navi.css">
+  <title>trade</title>
+</head>
+
+<!-- <body bgcolor="#10100E" text="#cccccc"> -->
+<body style="background-image: url(./wall/b032.gif);">
+  <script type="text/javascript">
+    var day = new Date(document.lastModified);
+    var y = day.getFullYear();
+    var m = day.getMonth() + 1;
+    var d = day.getDate();
+
+    var week = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+    var w = week[day.getDay()];
+
+    if (m < 10) m = "0" + m; // 数値が1～9の時には
+    if (d < 10) d = "0" + d; // 0 を追加してそろえる
+
+    document.write("Last Update: " + y + "/" + m + "/" + d + " (" + w + ")");
+  </script>
+  <div id="A_top">
+    <ul>
+      <li><a href="./home.html">HOME</a></li>
+      <li>
+        <a href="./trade.html">TRADE<span class="caret"></span></a>
+        <div>
+          <ul>
+            <li><a href="./indicator.html">Indicator</a></li>
+            <li><a href="./trade_code.html">CODE</a></li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <a href="#">HOBBY<span class="caret"></a>
+        <div>
+          <ul>
+            <li><a href="./othello.html">othello</a></li>
+            <li><a href="./translate.html">translate</a></li>
+            <li><a href="./index.html">equation</a></li>
+          </ul>
+        </div>
+      </li>
+      <li><a href="#">HELP</a></li>
+    </ul>
+  </div>
+
+  <div id="D_center">
+    <h1>trade</h1>
+    <p>
+      <a href="home.html">HOME</a>
+    </p>
+    <p>
+      <a href="othello.html">othello</a>
+    </p>
+  </div>
+
+</body>
+
+</html>
+
+
+<!-- ==================================================== >
+
+参考文献
+
+最終更新
+http://www9.plala.or.jp/oyoyon/html/script/modified.html
+
+< ===================================================== -->
