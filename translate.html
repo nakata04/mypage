@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <link rel="stylesheet" href="./cp_navi.css">
   <!-- <script src="./des.js"></script> -->
-  <title>sample</title>
+  <title>translate</title>
 </head>
 
 <!-- <body bgcolor="#10100E" text="#cccccc"> -->
@@ -77,20 +77,28 @@ $("#header").load("header.html");
         document.getElementById("text_out").innerHTML = text_in;
       }
     </script>
+
+    <h1>fontの変換</h1>
     <font face="deathnote">
-      <h1 id="death_font">Translate</h1>
-      <p>The human whose name is written in this note shall die.</p>
+      <h2 id="death_font">Translate</h1>
+        <p>The human whose name is written in this note shall die.</p>
     </font>
 
-    <textarea cols="50" rows="10" id="text_death" placeholder="abcd"></textarea>
+    <textarea cols="60" rows="10" id="text_death" placeholder="abcd" style="padding: 10px; background-color: #ffffcc;"></textarea>
     <br>
     <!-- <input type="text" id="text" rows="5" style="width:30px; height:100px;"> -->
     <input type="button" value="変換" onclick="handan(text_death.value)">
-    <font face="deathnote"><div id="text_out">result</div></font>
+    <font face="deathnote">
+      <div id="text_out" style="width: 500px; height: 100px; padding: 10px; overflow-x: scroll; border: 1px solid #333333; background-color: #ffffff;">
+        result
+      </div>
+    </font>
+
+    <br><br><br>
 
     <font face="madoka">
-      <h1 id="madoka_font">Translate</h1>
-      <p>I'm not afraid of anything anymore because I'm not alone.</p>
+      <h2 id="madoka_font">Translate</h1>
+        <p>I'm not afraid of anything anymore because I'm not alone.</p>
     </font>
 
     <script type="text/javascript">
@@ -99,11 +107,16 @@ $("#header").load("header.html");
       }
     </script>
 
-    <textarea cols="50" rows="10" id="text_madoka" placeholder="abcd"></textarea>
+    <textarea cols="60" rows="10" id="text_madoka" placeholder="abcd" style="padding: 10px; background-color: #ffffcc;"></textarea>
     <br>
+
     <!-- <input type="text" id="text" rows="5" style="width:30px; height:100px;"> -->
     <input type="button" value="変換" onclick="handan1(text_madoka.value)">
-    <font face="madoka"><div id="text_out1">result</div></font>
+    <font face="madoka">
+      <div id="text_out1" style="width: 500px; height: 100px; padding: 10px; overflow-x: scroll; border: 1px solid #333333; background-color: #ffffff;">
+        result
+      </div>
+    </font>
 
     <br>
 
@@ -118,16 +131,16 @@ $("#header").load("header.html");
 
     <br><br><br><br>
 
-    </div>
+  </div>
 
-    <!-- <p>
+  <!-- <p>
       <a href="trade.html">trade</a>
     </p>
     <p>
       <a href="othello.html">othello</a>
     </p> -->
 
-  </div>
+  <!-- </div> -->
 </body>
 
 </html>
