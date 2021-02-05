@@ -1,0 +1,399 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="./cp_navi.css">
+  <link rel="stylesheet" href="./google-code-prettify/prettify1.css">
+  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/desert.css"> -->
+  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/doxy.css"> -->
+  <title>OANDA Python code</title>
+  <script lang="python" type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <!-- <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script> -->
+</head>
+
+<!-- <body> -->
+
+<body style="background-image: url(./wall/b029.gif);">
+  <!-- 排他的個人主義 -->
+
+  <script src="./google-code-prettify/prettify.js"></script>
+  <!-- <script src="./google-code-prettify/lang-cl.js"></script> -->
+  <!-- <script src="./google-code-prettify/lang-css.js"></script> -->
+  <script>
+    window.addEventListener("load", function() {
+      PR.prettyPrint();
+    });
+  </script>
+
+  <script type="text/javascript">
+    var day = new Date(document.lastModified);
+    var y = day.getFullYear();
+    var m = day.getMonth() + 1;
+    var d = day.getDate();
+
+    var week = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+    var w = week[day.getDay()];
+
+    if (m < 10) m = "0" + m; // 数値が1～9の時には
+    if (d < 10) d = "0" + d; // 0 を追加してそろえる
+
+    document.write("Last Update: " + y + "/" + m + "/" + d + " (" + w + ")");
+  </script>
+
+  <div id="A_top">
+    <ul>
+      <li><a href="./home.html">HOME</a></li>
+      <li>
+        <a href="./trade.html">TRADE<span class="caret"></span></a>
+        <div>
+          <ul>
+            <li><a href="./indicator.html">Indicator</a></li>
+            <li><a href="./trade_code.html">CODE1</a></li>
+            <li><a href="./trade_code2.html">CODE2</a></li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <a href="#">HOBBY<span class="caret"></span></a>
+        <div>
+          <ul>
+            <li><a href="./othello.html">othello</a></li>
+            <li><a href="./translate.html">translate</a></li>
+            <li><a href="./index.html">equation</a></li>
+          </ul>
+        </div>
+      </li>
+      <li><a href="#">HELP</a></li>
+    </ul>
+  </div>
+
+  <div id="B_left">
+    <a href="#trade_main">Mainコード</a>
+    <a href="#trade_param">パラメータファイル</a>
+    <a href="#trade_currency">標準スプレッド</a>
+    <!-- <a href="#macd">MACD</a>
+    <a href="#ema">EMA</a> -->
+  </div>
+
+  <div id="D_center">
+    <h1>OANDA-Pythonコード  #2</h1>
+    <p><a href="./trade_code.html">CODE1</a>の自動売買コードはまだ不完全である。
+      通貨ペア、時間足等の設定や、重視する指標などにより結果は大きく異なる。
+      また、ネットの回線の具合によりデータが取得できずにエラーを吐くことがある。
+      そこでトレードの補助として、相場の価格データから現在の加熱具合（売られ過ぎ、買われ過ぎ）を判定する。
+      価格データは<a href="https://www.oanda.jp">OANDA</a>から入手する。</p>
+
+    <h2>相場判定</h2>
+    <p>入手した為替データから、RSI、MACDの指標を計算し総合的な相場の過熱度を判定する。
+      判定には2つの異なる時間足を使用する。
+      短期足と長期足共に売られ過ぎまたは買われ過ぎのとき、シグナルを出す。
+      更新時の価格を時間足の暫定的な終値とすることで、過敏に評価することができる。
+      本コードはオシレーター系の指標のみで構成されているため、トレンド化での判定に弱い欠点がある。
+    </p>
+    <ol type="1">
+      <li id="trade_main">Mainコード</li>
+
+      <br>
+      <!-- http://www.yamamo10.jp/yamamoto/internet/WEB/regulation/GCP/index.php -->
+      <div style="width: 95%; height: 600px; overflow-x: scroll; overflow-y: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
+        <pre><code class="prettyprint lang-py linenums">    # coding: utf-8
+    import configparser
+
+    # ファイルの存在チェック用モジュール
+    import os
+    import errno
+
+    import requests
+    import json
+    import numpy as np
+
+    import matplotlib.pyplot as plt
+    from datetime import datetime, timedelta
+
+    import time
+    import copy
+
+    import pandas as pd
+    from datetime import datetime
+    import json
+    import oandapyV20
+    import oandapyV20.endpoints.orders as orders
+    import oandapyV20.endpoints.instruments as instruments
+    from oandapyV20.endpoints.positions import OpenPositions, PositionClose
+
+
+    # ================================================== #
+    #                                                    #
+    #  read configure file "config.ini"                  #
+    #                                                    #
+    # ================================================== #
+
+    config_ini      = configparser.ConfigParser(inline_comment_prefixes=('#', ';'))
+    config_ini_path = './config.ini'
+
+    if not os.path.exists(config_ini_path):
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), config_ini_path)
+
+    config_ini.read(config_ini_path, encoding='utf-8')
+
+    read_default   = config_ini['DEFAULT']
+    account_id     = read_default.get('account_id')
+    api_key        = read_default.get('api_key')
+
+    read_mode      = config_ini['MODE']
+    BACKTEST       = read_mode.getint('BACKTEST')
+    TRADE_OFF      = read_mode.getint('TRADE_OFF')
+    STEP           = read_mode.getint('STEP')
+    TRADE_STYLE    = read_mode.getint('TRADE_STYLE')
+
+    read_order     = config_ini['ORDER']
+    PRICE          = read_order.get('PRICE')
+    UNITS          = read_order.getint('UNITS')
+    TYPE           = read_order.get('TYPE')
+
+    if TRADE_STYLE == 2:
+        print("scalping mode")
+        scal_set       = config_ini['SCAL_SETTING']
+        CANDLE_LONG    = scal_set.get('CANDLE_LONG')
+        CANDLE_BASE    = scal_set.get('CANDLE_BASE')
+        CANDLE_SHORT   = scal_set.get('CANDLE_SHORT')
+        TERM_IN        = scal_set.getint('TERM_IN')
+        TERM_OUT       = scal_set.getint('TERM_OUT')
+        TERM_SUP_IN    = scal_set.getint('TERM_SUP_IN')
+        TERM_SUP_OUT   = scal_set.getint('TERM_SUP_OUT')
+
+        RSI_BIN        = scal_set.getint('RSI_BIN')
+        MACD_SLOW      = scal_set.getint('MACD_SLOW')
+        MACD_FAST      = scal_set.getint('MACD_FAST')
+        SIGNAL_SMOOTH  = scal_set.getint('SIGNAL_SMOOTH')
+    else:
+        print("day trade mode")
+        day_set        = config_ini['DAY_SETTING']
+        CANDLE_LONG    = day_set.get('CANDLE_LONG')
+        CANDLE_BASE    = day_set.get('CANDLE_BASE')
+        CANDLE_SHORT   = day_set.get('CANDLE_SHORT')
+        TERM_IN        = day_set.getint('TERM_IN')
+        TERM_OUT       = day_set.getint('TERM_OUT')
+        TERM_SUP_IN    = day_set.getint('TERM_SUP_IN')
+        TERM_SUP_OUT   = day_set.getint('TERM_SUP_OUT')
+
+        RSI_BIN        = day_set.getint('RSI_BIN')
+        MACD_SLOW      = day_set.getint('MACD_SLOW')
+        MACD_FAST      = day_set.getint('MACD_FAST')
+        SIGNAL_SMOOTH  = day_set.getint('SIGNAL_SMOOTH')
+
+
+    # ================================================== #
+    #                                                    #
+    #  read currency file "currency.txt"                 #
+    #                                                    #
+    # ================================================== #
+
+    currency       = configparser.ConfigParser(inline_comment_prefixes=('#', ';'))
+    currency_path  = './currency.txt'
+
+    if not os.path.exists(currency_path):
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), currency_path)
+
+    currency.read(currency_path, encoding='utf-8')
+
+    oanda = oandapyV20.API(access_token=api_key)
+
+    API_URL =  "https://api-fxpractice.oanda.com"
+
+    #ドル円データを取得する関数
+    def get_price(chart_sec, INSTRUMENT, COUNT):
+        price = []
+        r = instruments.InstrumentsCandles(instrument=INSTRUMENT,
+        params={
+            "granularity":chart_sec,
+            "count" : COUNT
+        })
+        oanda.request(r)
+        try:
+            data = r.response["candles"]
+        except requests.exceptions.ConnectTimeout:
+            print(f"\rタイムアウトしました...\n再接続待機中...{stand_by_sec}秒後に再実行します", end="", flush=True)
+            sleep(stand_by_sec)
+            data = get_price(chart_sec, COUNT)
+
+        for j in range(len(data)):
+            price.append({ "close_time" : pd.to_datetime(data[j]["time"]),
+                "open_price" : float(data[j]["mid"]["o"]),
+                "close_price" : float(data[j]["mid"]["c"]),
+                "low_price" : float(data[j]["mid"]["l"]),
+                "high_price" : float(data[j]["mid"]["h"])})
+
+        return price
+
+
+    # json形式のファイルから価格データを読み込む関数
+    def get_price_from_file(path):
+        file = open(path,'r',encoding='utf-8')
+        price = json.load(file)
+        return price
+
+
+    #取得データをAnaconda Promotに表示する関数
+    def print_price( data ):
+        print( "時間: " + str(data["close_time"])
+                    + " 始値: " + str(data["open_price"])
+                    + " 終値: " + str(data["close_price"]) )
+
+
+    def SMA(last_data, DAY, BASE):
+        ma = 0
+        i = 0
+        while i < DAY:
+            ma += last_data[-(DAY + i + BASE)]["close_price"]
+            i += 1
+        sma = ma / DAY
+        return sma
+
+    # 指数平滑移動平均
+    def EMA(last_data, DAY, BASE):
+        ma = 0
+        i = 0
+        while(i < DAY):
+            ma += last_data[-(DAY + i + BASE)]["close_price"]
+            i += 1
+        ema = ma / DAY
+
+        alpha = 2 / (DAY + 1)
+        j = 0
+        while (j < DAY):
+            ema += alpha * (last_data[-(DAY - j + BASE)]["close_price"] - ema)
+            j += 1
+        return ema
+
+
+    def RSI(last_data, BASE):
+        sum_positive = 0
+        sum_negative = 0
+        count_positive = 0
+        count_negative = 0
+        i = 1
+        while (i <= RSI_BIN):
+            if last_data[-(i+BASE)]["close_price"] >= last_data[-(i+1+BASE)]["close_price"]:
+                sum_positive += last_data[-(i+BASE)]["close_price"] - last_data[-(i+1+BASE)]["close_price"]
+                count_positive += 1
+            else:
+                sum_negative += last_data[-(i+1+BASE)]["close_price"] - last_data[-(i+BASE)]["close_price"]
+                count_negative += 1
+
+            i += 1
+
+        # sum_positive /= count_positive
+        # sum_negative /= count_negative
+
+        rsi = (1 - (sum_negative / (sum_negative + sum_positive))) * 100
+
+        if rsi <= 0 or rsi >= 100:
+            print("RSI :", rsi)
+        return rsi
+
+
+    def MACD(last_data, BASE):
+        sig = 0
+        i   = 0
+        while(i < SIGNAL_SMOOTH):
+            sig += EMA(last_data, MACD_FAST, i+BASE) - EMA(last_data, MACD_SLOW, i+BASE)
+            i += 1
+
+        macd = EMA(last_data, MACD_FAST, BASE) - EMA(last_data, MACD_SLOW, BASE)
+        sign = sig / SIGNAL_SMOOTH
+        return macd, sign
+
+
+    # 逆張り
+    def support(last_data, fresh_data, long_fresh_data):
+        rsi      = RSI(fresh_data, 0)
+        rsi_long = RSI(long_fresh_data, 0)
+        highest  = max(i["high_price"] for i in last_data[-1 * TERM_SUP_IN:-1])
+        lowest   = min(i["close_price"] for i in last_data[-1 * TERM_SUP_IN:-1])
+        macd, signal = MACD(last_data, 0)
+        print("                RSI = {:.3f} , RSI_long = {:.3f}".format(rsi, rsi_long))
+        if rsi_long > 80 or (rsi > 90 and rsi_long > 55) or (rsi_long > 60 and rsi > 80 and macd - signal < 0 and macd - signal > -0.05):
+            return {"side":"SELL","price":lowest, "rsi":rsi}
+
+        if rsi_long < 20 or (rsi < 10 and rsi_long < 45) or (rsi_long < 40 and rsi < 20 and macd - signal > 0 and macd - signal < 0.05):
+            return {"side":"BUY","price":highest, "rsi":rsi}
+
+        return {"side" : None , "price":0, "rsi":rsi}
+
+    # ブレイクを判定する関数
+    def breakout(data_short, last_data, fresh_data, long_fresh_data):
+        rsi      = RSI(last_data, 0)
+        rsi_long = RSI(long_fresh_data, 0)
+        highest = max(i["high_price"] for i in last_data[-1 * TERM_IN:-1])
+        if (rsi < 40 or rsi_long < 40) and data_short["close_price"] > highest:
+            return {"side":"BUY","price":highest}
+
+        lowest = min(i["low_price"] for i in last_data[-1 * TERM_IN:-1])
+        if (rsi > 60 or rsi_long > 60) and data_short["close_price"] < lowest:
+            return {"side":"SELL","price":lowest}
+
+        return {"side" : None , "price":0}
+
+
+    INSTRUMENT = ["USD_JPY", "EUR_JPY", "EUR_USD", "EUR_GBP", "AUD_JPY", "AUD_USD", "GBP_JPY", "GBP_USD", "NZD_JPY", "NZD_USD"]
+
+    long_data, long_fresh_data = [], []
+    last_data, fresh_data      = [], []
+    i = 0
+    while i < len(INSTRUMENT):
+        url = API_URL + "/v3/accounts/%s/pricing?instruments=%s" % (str(account_id), INSTRUMENT[i])
+        # ヘッダー情報の変数の設定
+        headers = {
+            "Authorization" : "Bearer " + api_key
+        }
+        # サーバーへの要求
+        response = requests.get(url, headers=headers)
+        # 処理結果の編集
+        Response_Body = json.loads(response.text)
+
+        # 価格チャートを取得
+        price_long  = get_price(CANDLE_LONG, INSTRUMENT[i], 100)
+        price       = get_price(CANDLE_BASE, INSTRUMENT[i], 100)
+        price_short = get_price(CANDLE_SHORT, INSTRUMENT[i], 1)
+
+        last_data   = copy.copy(price)
+
+        fresh_data      = copy.copy(price)
+        long_fresh_data = copy.copy(price_long)
+        fresh_data[-1]      = copy.copy(price_short[-1])
+        long_fresh_data[-1] = copy.copy(price_short[-1])
+
+        print("{} : {:.5f}".format(INSTRUMENT[i], price_short[-1]["close_price"]))
+
+        signal = support(last_data, fresh_data, long_fresh_data)
+
+        if signal["side"] == "BUY":
+            print("    {} : 売られ過ぎ".format(INSTRUMENT[i]))
+        elif signal["side"] == "SELL":
+            print("    {} : 買われ過ぎ".format(INSTRUMENT[i]))
+
+        i += 1</code></pre>
+      </div>
+
+      <br>
+      <li id="trade_param">パラメータファイル</li>
+      <p><a href="./trade_code.html">CODE1</a>と同様</p>
+
+      <br>
+      <li id="trade_currency">標準スプレッド</li>
+      <p><a href="./trade_code.html">CODE1</a>と同様</p>
+
+    </ol>
+  </div>
+  <!-- <script src="./google-code-prettify/prettify.js"></script>
+  <script>prettyPrint();</script> -->
+
+  <br><br><br><br>
+
+
+
+</body>
+
+</html>
