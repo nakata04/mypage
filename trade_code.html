@@ -5,21 +5,13 @@
   <meta charset="utf-8">
   <link rel="stylesheet" href="./cp_navi.css">
   <link rel="stylesheet" href="./google-code-prettify/prettify1.css">
-  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/desert.css"> -->
-  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/doxy.css"> -->
   <title>OANDA Python code</title>
   <script lang="python" type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-  <!-- <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script> -->
 </head>
 
-<!-- <body> -->
-
 <body style="background-image: url(./wall/b029.gif);">
-  <!-- 排他的個人主義 -->
 
   <script src="./google-code-prettify/prettify.js"></script>
-  <!-- <script src="./google-code-prettify/lang-cl.js"></script> -->
-  <!-- <script src="./google-code-prettify/lang-css.js"></script> -->
   <script>
     window.addEventListener("load", function() {
       PR.prettyPrint();
@@ -60,7 +52,7 @@
           <ul>
             <li><a href="./othello.html">othello</a></li>
             <li><a href="./translate.html">translate</a></li>
-            <li><a href="./index.html">equation</a></li>
+            <li><a href="./equation.html">equation</a></li>
           </ul>
         </div>
       </li>
@@ -72,8 +64,6 @@
     <a href="#trade_main">Mainコード</a>
     <a href="#trade_param">パラメータファイル</a>
     <a href="#trade_currency">標準スプレッド</a>
-    <!-- <a href="#macd">MACD</a>
-    <a href="#ema">EMA</a> -->
   </div>
 
   <div id="D_center">
@@ -86,30 +76,8 @@
       エントリーのチャンスが来たら自動でエントリーを行い、また決済も行う。</p>
     <ol type="1">
       <li id="trade_main">Mainコード</li>
-      <!-- <p>全体の変動幅から、相場の過熱感（買われ過ぎ、売られ過ぎ）を判断する</p> -->
-
-      <!-- \begin{align}
-    F(\omega) = \cfrac{1}{\sqrt{2\pi}}\int_{-\infty}^{+\infty}f(t)e^{i\omega t}dt
-    \end{align} -->
-      <!-- \begin{align}
-      \mathrm{RS} &= \frac{期間中の平均上昇幅}{期間中の平均下落幅} \equiv \frac{\alpha}{\beta} \\
-      \mathrm{RSI} &= \left( 1 - \frac{1}{1 - \mathrm{RS}} \right) \times 100 \\
-      &= \left( 1 - \frac{\beta}{\beta - \alpha} \right) \times 100
-      \end{align}
-
-      <ol type="a">
-        <li>平均上昇幅 (sum_positive)</li>
-        最初 : (14日間の上昇幅の合計)÷14
-        <br>
-        以降 : (前日までの平均上昇幅 × (14-1)+直近の上昇幅)÷14
-        <li>平均下落幅 (sum_negative)</li>
-        最初 : (14日間の下落幅の合計)÷14
-        <br>
-        以降 : (前日までの平均下落幅 × (14-1)+直近の下落幅)÷14
-      </ol> -->
 
       <br>
-      <!-- http://www.yamamo10.jp/yamamoto/internet/WEB/regulation/GCP/index.php -->
       <div style="width: 95%; height: 600px; overflow-x: scroll; overflow-y: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
         <pre><code class="prettyprint lang-py linenums">    # coding: utf-8
     import configparser
@@ -1286,11 +1254,6 @@
   <br>
   <li id="trade_param">パラメータファイル</li>
 
-  <!-- \begin{align}
-  \mathrm{MACD} &= 短期\mathrm{EMA}_{(k)} - 長期\mathrm{EMA}_{(k)} \\
-  \mathrm{SIGNAL} &= \frac{1}{n} \sum_{i=0}^{n-1} \mathrm{MACD}_{(k)}
-  \end{align} -->
-
   <div style="width: 95%; height: 600px; overflow-x: scroll; overflow-x: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
     <pre><code class="prettyprint linenums">    [DEFAULT]
     account_id     = XXX-XXX-XXXXXXXX-XXX
@@ -1385,7 +1348,7 @@
     CANDLE_SHORT   = M10
     QUOTE_WIDTH    = 0.01
     TERM_IN        = 20
-    TERM_OUT       = 10   # aaa
+    TERM_OUT       = 10
     TERM_SUP_IN    = 80
     TERM_SUP_OUT   = 20
 
@@ -1406,10 +1369,6 @@
   <li id="trade_currency">標準スプレッド</li>
   <p>エントリーの条件が揃ってもスプレッドが大きければ、そのポジションは弱くなってしまう。
   そこで、取引所の標準的なスプレッドに対して、現在のスプレッドが数倍に広がってしまっているときにエントリーを見送る。</p>
-  <!-- \begin{align}
-  \mathrm{EMA}_{(1)} &= \frac{1}{n} \sum_{i=0}^{n-1} 終値(i) \\
-  \mathrm{EMA}_{(k)} &= \mathrm{EMA}_{(k-1)} + \frac{2}{n+1} \times (終値 - \mathrm{EMA}_{(k-1)}) \ \ \ \ \ (k \geq 2)
-  \end{align} -->
   <div style="width: 95%; overflow-x: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
     <pre><code class="prettyprint linenums">  [USD_JPY]
   SPREAD      = 0.17
@@ -1435,12 +1394,8 @@
       </div>
     </ol>
   </div>
-  <!-- <script src="./google-code-prettify/prettify.js"></script>
-  <script>prettyPrint();</script> -->
 
   <br><br><br><br>
-
-
 
 </body>
 

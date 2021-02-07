@@ -5,19 +5,12 @@
   <meta charset="utf-8">
   <link rel="stylesheet" href="./cp_navi.css">
   <link rel="stylesheet" href="./google-code-prettify/prettify1.css">
-  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/desert.css"> -->
-  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/doxy.css"> -->
   <title>Tradeing Indicator</title>
   <script lang="python" type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-  <!-- <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script> -->
 </head>
-
-<!-- <body> -->
 
 <body style="background-image: url(./wall/b029.gif);">
   <script src="./google-code-prettify/prettify.js"></script>
-  <!-- <script src="./google-code-prettify/lang-cl.js"></script> -->
-  <!-- <script src="./google-code-prettify/lang-css.js"></script> -->
   <script>
     window.addEventListener("load", function() {
       PR.prettyPrint();
@@ -58,7 +51,7 @@
           <ul>
             <li><a href="./othello.html">othello</a></li>
             <li><a href="./translate.html">translate</a></li>
-            <li><a href="./index.html">equation</a></li>
+            <li><a href="./equation.html">equation</a></li>
           </ul>
         </div>
       </li>
@@ -75,9 +68,9 @@
   </div>
 
   <div id="D_center">
-    <h1>インジケータ</h1>
-    <!-- <font face="ＭＳ Ｐ明朝">Samurai</font> -->
-    <!-- <font face="madoka">Samurai</font> -->
+    <header>
+      <h1>インジケータ</h1>
+    </header>
 
     <h2>インジケータと売買判定</h2>
     <h3 id="entry">エントリー</h3>
@@ -150,9 +143,6 @@
       <li id="rsi">相対力指数 (Relative Strength Index : RSI)</li>
       <p>全体の変動幅から、相場の過熱感（買われ過ぎ、売られ過ぎ）を判断する</p>
 
-      <!-- \begin{align}
-    F(\omega) = \cfrac{1}{\sqrt{2\pi}}\int_{-\infty}^{+\infty}f(t)e^{i\omega t}dt
-    \end{align} -->
       \begin{align}
       \mathrm{RS} &= \frac{期間中の平均上昇幅}{期間中の平均下落幅} \equiv \frac{\alpha}{\beta} \\
       \mathrm{RSI} &= \left( 1 - \frac{1}{1 - \mathrm{RS}} \right) \times 100 \\
@@ -236,12 +226,8 @@
       </div>
     </ol>
   </div>
-  <!-- <script src="./google-code-prettify/prettify.js"></script>
-  <script>prettyPrint();</script> -->
 
   <br><br><br><br>
-
-
 
 </body>
 

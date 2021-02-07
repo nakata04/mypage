@@ -4,19 +4,10 @@
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="./cp_navi.css">
-  <!-- <script src="./des.js"></script> -->
   <title>translate</title>
 </head>
 
-<!-- <body bgcolor="#10100E" text="#cccccc"> -->
-
-<body style="background-image: url(./wall/b032.gif);" onload="setupDes();">
-
-  <!-- <script type="text/javascript">
-  $(function(){
-$("#header").load("header.html");
-// $("#footer").load("footer.html");
-}); -->
+<body style="background-image: url(./wall/b032.gif);">
   </script>
   <script type="text/javascript">
     var day = new Date(document.lastModified);
@@ -53,7 +44,7 @@ $("#header").load("header.html");
           <ul>
             <li><a href="./othello.html">othello</a></li>
             <li><a href="./translate.html">translate</a></li>
-            <li><a href="./index.html">equation</a></li>
+            <li><a href="./equation.html">equation</a></li>
           </ul>
         </div>
       </li>
@@ -65,13 +56,9 @@ $("#header").load("header.html");
     <ul>
       <li><a href="#death_font">DeathNote風</a></li>
       <li><a href="#madoka_font">まどマギ風</a></li>
-      <!-- <li><a href="#">DIARY</a></li>
-      <li><a href="#">BBS</a></li> -->
     </ul>
   </div>
 
-  <!-- <div align="center"> -->
-  <!-- https://mnlab.sakura.ne.jp/garden/death.html -->
   <div id="D_center">
     <script type="text/javascript">
       function handan(text_in) {
@@ -87,7 +74,6 @@ $("#header").load("header.html");
 
     <textarea cols="60" rows="10" id="text_death" placeholder="abcd" style="padding: 10px; background-color: #ffffcc;"></textarea>
     <br>
-    <!-- <input type="text" id="text" rows="5" style="width:30px; height:100px;"> -->
     <input type="button" value="変換" onclick="handan(text_death.value)">
     <font face="deathnote">
       <div id="text_out" style="width: 500px; height: 100px; padding: 10px; overflow-x: scroll; border: 1px solid #333333; background-color: #ffffff;">
@@ -111,7 +97,6 @@ $("#header").load("header.html");
     <textarea cols="60" rows="10" id="text_madoka" placeholder="abcd" style="padding: 10px; background-color: #ffffcc;"></textarea>
     <br>
 
-    <!-- <input type="text" id="text" rows="5" style="width:30px; height:100px;"> -->
     <input type="button" value="変換" onclick="handan1(text_madoka.value)">
     <font face="madoka">
       <div id="text_out1" style="width: 500px; height: 100px; padding: 10px; overflow-x: scroll; border: 1px solid #333333; background-color: #ffffff;">
@@ -134,14 +119,6 @@ $("#header").load("header.html");
 
   </div>
 
-  <!-- <p>
-      <a href="trade.html">trade</a>
-    </p>
-    <p>
-      <a href="othello.html">othello</a>
-    </p> -->
-
-  <!-- </div> -->
 </body>
 
 </html>
