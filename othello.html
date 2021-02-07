@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="./cp_navi.css">
+  <title>underconstruction</title>
+</head>
+
+<body style="background-image: url(./figure/mgas.png); background-size: 33.34% auto;">
+  <header>
+    <script type="text/javascript">
+      var day = new Date(document.lastModified);
+      var y = day.getFullYear();
+      var m = day.getMonth() + 1;
+      var d = day.getDate();
+
+      var week = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+      var w = week[day.getDay()];
+
+      if (m < 10) m = "0" + m; // 数値が1～9の時には
+      if (d < 10) d = "0" + d; // 0 を追加してそろえる
+
+      document.write("Last Update: " + y + "/" + m + "/" + d + " (" + w + ")");
+    </script>
+
+
+    <div id="A_top">
+      <ul>
+        <li><a href="./home.html">HOME</a></li>
+        <li>
+          <a href="./trade.html">TRADE<span class="caret"></span></a>
+          <div>
+            <ul>
+              <li><a href="./indicator.html">Indicator</a></li>
+              <li><a href="./trade_code.html">CODE1</a></li>
+              <li><a href="./trade_code2.html">CODE2</a></li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <a href="#">HOBBY<span class="caret"></a>
+          <div>
+            <ul>
+              <li><a href="./othello.html">othello</a></li>
+              <li><a href="./translate.html">translate</a></li>
+              <li><a href="./equation.html">equation</a></li>
+            </ul>
+          </div>
+        </li>
+        <li><a href="./help.html">HELP</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <div id="B_left">
+    <ul>
+      <li><a href="#">aaa</a></li>
+    </ul>
+  </div>
+
+  <div id="D_center">
+    <br><br>
+    <div style="width: 300px; background: #fffaaa; padding: 10px;">
+      <h1>underconstruction</h1>
+    </div>
+
+  </div>
+</body>
+
+</html>
