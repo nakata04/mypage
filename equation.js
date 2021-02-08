@@ -4,8 +4,9 @@ window.onload = function() {
     return false;
   }
   ctx = canvas.getContext('2d');
-  Xmin = -5;
-  Xmax = 5;
+  // 描画するグラフに合わせて、X軸、Y軸の最小値と最大値を設定する
+  Xmin = -10;
+  Xmax = 10;
   Ymin = -5;
   Ymax = 15;
   maxWidth = canvas.width; // Canvasの大きさはHTMLで指定する
