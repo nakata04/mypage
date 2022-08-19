@@ -1,0 +1,252 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="../cp_navi.css">
+  <link rel="stylesheet" href="../google-code-prettify/prettify1.css">
+  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/desert.css"> -->
+  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/doxy.css"> -->
+  <title>Tradeing Indicator</title>
+  <script lang="python" type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <!-- <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script> -->
+</head>
+
+<!-- <body> -->
+
+<body style="background-image: url(../wall/b029.gif);">
+  <script src="../google-code-prettify/prettify.js"></script>
+  <!-- <script src="./google-code-prettify/lang-cl.js"></script> -->
+  <!-- <script src="./google-code-prettify/lang-css.js"></script> -->
+  <script>
+    window.addEventListener("load", function() {
+      PR.prettyPrint();
+    });
+  </script>
+
+  <script type="text/javascript">
+    var day = new Date(document.lastModified);
+    var y = day.getFullYear();
+    var m = day.getMonth() + 1;
+    var d = day.getDate();
+
+    var week = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+    var w = week[day.getDay()];
+
+    if (m < 10) m = "0" + m; // 数値が1～9の時には
+    if (d < 10) d = "0" + d; // 0 を追加してそろえる
+
+    document.write("Last Update: " + y + "/" + m + "/" + d + " (" + w + ")");
+  </script>
+
+  <div id="A_top">
+    <ul>
+      <li><a href="../home.html">HOME</a></li>
+      <li>
+        <a href="../trade.html">TRADE<span class="caret"></span></a>
+        <div>
+          <ul>
+            <li><a href="../trade/indicator.html">Indicator</a></li>
+            <li><a href="../trade/trade_code.html">CODE1</a></li>
+            <li><a href="../trade/trade_code2.html">CODE2</a></li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <a href="./trade.html">PROJECT<span class="caret"></span></a>
+        <div>
+          <ul>
+            <li><a href="../project/hydro.html">SPH theory</a></li>
+            <li><a href="../project/hydro_code.html">CODE1</a></li>
+            <li><a href="../project/hydro_code2.html">CODE2</a></li>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <a href="#">HOBBY<span class="caret"></a>
+        <div>
+          <ul>
+            <li><a href="../hobby/othello.html">othello</a></li>
+            <li><a href="../hobby/translate.html">translate</a></li>
+            <li><a href="../hobby/equation.html">equation</a></li>
+            <li><a href="../hobby/equation.html">equation</a></li>
+          </ul>
+        </div>
+      </li>
+      <li><a href="../help.html">HELP</a></li>
+    </ul>
+  </div>
+
+  <div id="B_left">
+    <a href="#abstract">エントリー</a>
+    <a href="#exit">決済</a>
+    <a href="#rsi">RSI</a>
+    <a href="#macd">MACD</a>
+    <a href="#ema">EMA</a>
+  </div>
+
+  <div id="D_center">
+    <header>
+      <h1>SPHシミュレーション</h1>
+    </header>
+    <!-- <font face="ＭＳ Ｐ明朝">Samurai</font> -->
+    <!-- <font face="madoka">Samurai</font> -->
+
+    <h2>SPH (Smoothed Particle Hydrodynamics) simulations</h2>
+    <h3 id="abstract">概要</h3>
+    SPH方は粒子法の一種で、各粒子の位置に流体をカーネル関数に従った分布で配置し、その重ね合わせにより流体変数の空間分布を表す手法である。
+    <!-- <li>ブレイクアウト</li>
+    <p>一定期間の高値を終値がブレイクを確認した後、トレンドに従ってエントリーする。</p>
+    <li>サポート</li>
+    <p>一定期間の高値で終値をサポートしたことを確認して、逆張りでエントリーする。</p> -->
+
+    <li>水の状態方程式</li>
+    \begin{align}
+      \frac{p + B}{1 + B} &= \left( \frac{\rho}{\rho_0} \right)^n \\
+      p &= B \left[ \left( \frac{\rho}{\rho_0} \right)^n - 1 \right] + \left( \frac{\rho}{\rho_0} \right)^n
+    \end{align}
+
+    <li>カーネル関数</li>
+    \begin{align}
+      \int W(|\mathbf{r}|, h)dV = 1
+    \end{align}
+    smoothing length hとしたときの粒子の影響範囲の分布を3次スプライン関数W(r,h)で表現する。
+    \begin{align}
+      W(r, h) &= \frac{8}{\pi h^{3}} \left\{ \begin{array}{ll}
+        1 - 6\left( \frac{r}{h} \right)^{2} + 6\left(\frac{r}{h}\right)^{3}, & \left(0 \leqslant \frac{r}{h} \leqslant \frac{1}{2}\right) \\
+        2 \left( 1 - \frac{r}{h} \right)^{3}, & \left(\frac{1}{2}<\frac{r}{h} \leqslant 1\right) \\
+        0, & \left(\frac{r}{h}>1\right)
+      \end{array}\right. \\
+      \nabla W &= - \frac{48}{\pi h^{4}} \left\{ \begin{array}{ll}
+        \frac{r}{h} \left( 2 - 3 \frac{r}{h} \right)\mathbf{e}_{r}, & \left(0 \leqslant \frac{r}{h} \leqslant \frac{1}{2}\right) \\
+        \left( 1 - \frac{r}{h} \right)^{2} \mathbf{e}_r, & \left(\frac{1}{2}<\frac{r}{h} \leqslant 1\right) \\
+        \mathbf{0}, & \left(\frac{r}{h}>1\right)
+      \end{array}\right. \\
+
+    \end{align}
+
+    <img src="./figure/kernel.png" width="400px" alt="3次スプライン関数">
+
+    <br><br>
+
+    <li>SPH法における運動方程式</li>
+    \begin{align}
+      \frac{d \mathbf{v}_{i}}{d t}=-\sum_{j} m_{j}\left(\frac{p_{i}}{\rho_{i}^{2}}+\frac{p_{j}}{\rho_{j}^{2}}\right) \nabla_{i} W_{i, j}
+    \end{align}
+
+    <li>smoothing lengthの更新</li>
+    \begin{align}
+      \frac{dh_{i}}{dt} &= - \frac{h_{i}}{\rho_{i}d} \frac{d\rho_{i}}{dt} \\
+      &= - \frac{h_{i}}{d} \sum_{j} \frac{m_{j}}{\rho_{j}} \mathbf{v}_{i,j} \cdot \nabla_{i} W_{i,j}
+    \end{align}
+
+
+
+
+    <!-- 条件が複雑かつ困難
+    提案：複数の指数の総合的な判定指数を定義してはどうか -->
+
+    <!-- <h3 id="exit">決済</h3>
+    <p>基本的にエントリーと同じ仕組みで行う。ただし、パラメータの設定を変更し条件を緩和することで、エントリーよりも簡単に決済できるようにする。</p>
+
+    <h2>オシレーター系</h2>
+    <ol type="1">
+      <li id="rsi">相対力指数 (Relative Strength Index : RSI)</li>
+      <p>全体の変動幅から、相場の過熱感（買われ過ぎ、売られ過ぎ）を判断する</p> -->
+
+      <!-- \begin{align}
+    F(\omega) = \cfrac{1}{\sqrt{2\pi}}\int_{-\infty}^{+\infty}f(t)e^{i\omega t}dt
+    \end{align} -->
+      <!-- \begin{align}
+      \mathrm{RS} &= \frac{期間中の平均上昇幅}{期間中の平均下落幅} \equiv \frac{\alpha}{\beta} \\
+      \mathrm{RSI} &= \left( 1 - \frac{1}{1 - \mathrm{RS}} \right) \times 100 \\
+      &= \left( 1 - \frac{\beta}{\beta - \alpha} \right) \times 100
+      \end{align} -->
+
+      <!-- <ol type="a">
+        <li>平均上昇幅 (sum_positive)</li>
+        最初 : (14日間の上昇幅の合計)÷14
+        <br>
+        以降 : (前日までの平均上昇幅 × (14-1)+直近の上昇幅)÷14
+        <li>平均下落幅 (sum_negative)</li>
+        最初 : (14日間の下落幅の合計)÷14
+        <br>
+        以降 : (前日までの平均下落幅 × (14-1)+直近の下落幅)÷14
+      </ol> -->
+
+      <!-- <br>
+      <div style="width: 95%; overflow-x: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
+        <pre><code class="prettyprint linenums">    def RSI(last_data, BASE):
+        sum_positive = 0
+        sum_negative = 0
+        i = 1
+        while (i <= RSI_BIN):
+            if last_data[-(i+BASE)]["close_price"] >= last_data[-(i+1+BASE)]["close_price"]:
+                sum_positive += last_data[-(i+BASE)]["close_price"] - last_data[-(i+1+BASE)]["close_price"]
+            else:
+                sum_negative += last_data[-(i+1+BASE)]["close_price"] - last_data[-(i+BASE)]["close_price"]
+
+            i += 1
+
+        rsi = (1 - (sum_negative / (sum_negative + sum_positive))) * 100
+
+        return rsi</code></pre>
+      </div> -->
+
+      <!-- <br>
+      <li id="macd">MACD (Moving Average Convergence and Divergence)</li>
+
+      \begin{align}
+      \mathrm{MACD} &= 短期\mathrm{EMA}_{(k)} - 長期\mathrm{EMA}_{(k)} \\
+      \mathrm{SIGNAL} &= \frac{1}{n} \sum_{i=0}^{n-1} \mathrm{MACD}_{(k)}
+      \end{align}
+
+      <div style="width: 95%; overflow-x: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
+        <pre><code class="prettyprint linenums">    def MACD(last_data, BASE):
+        sig = 0
+        i   = 0
+        while(i < SIGNAL_SMOOTH):
+            sig += EMA(last_data, MACD_FAST, i+BASE) - EMA(last_data, MACD_SLOW, i+BASE)
+            i += 1
+
+        macd = EMA(last_data, MACD_FAST, BASE) - EMA(last_data, MACD_SLOW, BASE)
+        sign = sig / SIGNAL_SMOOTH
+        return macd, sign</code></pre>
+      </div> -->
+
+
+      <!-- <br>
+      <li id="ema">指数平滑移動平均 (Exponential Moving Average : EMA)</li>
+      <p>直近の値動きを重視する移動平均線</p>
+      \begin{align}
+      \mathrm{EMA}_{(1)} &= \frac{1}{n} \sum_{i=0}^{n-1} 終値(i) \\
+      \mathrm{EMA}_{(k)} &= \mathrm{EMA}_{(k-1)} + \frac{2}{n+1} \times (終値 - \mathrm{EMA}_{(k-1)}) \ \ \ \ \ (k \geq 2)
+      \end{align}
+      <div style="width: 95%; overflow-x: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
+        <pre><code class="prettyprint linenums">    def EMA(last_data, DAY, BASE):
+        ma = 0
+        i = 0
+        while(i < DAY):
+            ma += last_data[-(DAY + i + BASE)]["close_price"]
+            i += 1
+        ema = ma / DAY
+
+        alpha = 2 / (DAY + 1)
+        j = 0
+        while (j < DAY):
+            ema += alpha * (last_data[-(DAY - j + BASE)]["close_price"] - ema)
+            j += 1
+        return ema</code></pre>
+      </div> -->
+    <!-- </ol> -->
+  </div>
+  <!-- <script src="./google-code-prettify/prettify.js"></script>
+  <script>prettyPrint();</script> -->
+
+  <br><br><br><br>
+
+
+
+</body>
+
+</html>
