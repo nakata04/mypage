@@ -3,15 +3,22 @@
 
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="./cp_navi.css">
-  <link rel="stylesheet" href="./google-code-prettify/prettify1.css">
+  <link rel="stylesheet" href="../cp_navi.css">
+  <link rel="stylesheet" href="../google-code-prettify/prettify1.css">
+  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/desert.css"> -->
+  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/doxy.css"> -->
   <title>OANDA Python code</title>
   <script lang="python" type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <!-- <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script> -->
 </head>
 
-<body style="background-image: url(./wall/b029.gif);">
+<!-- <body> -->
 
-  <script src="./google-code-prettify/prettify.js"></script>
+<body style="background-image: url(../wall/b029.gif);">
+
+  <script src="../google-code-prettify/prettify.js"></script>
+  <!-- <script src="./google-code-prettify/lang-cl.js"></script> -->
+  <!-- <script src="./google-code-prettify/lang-css.js"></script> -->
   <script>
     window.addEventListener("load", function() {
       PR.prettyPrint();
@@ -35,14 +42,14 @@
 
   <div id="A_top">
     <ul>
-      <li><a href="./home.html">HOME</a></li>
+      <li><a href="../home.html">HOME</a></li>
       <li>
-        <a href="./trade.html">TRADE<span class="caret"></span></a>
+        <a href="../trade.html">TRADE<span class="caret"></span></a>
         <div>
           <ul>
-            <li><a href="./indicator.html">Indicator</a></li>
-            <li><a href="./trade_code.html">CODE1</a></li>
-            <li><a href="./trade_code2.html">CODE2</a></li>
+            <li><a href="../trade/indicator.html">Indicator</a></li>
+            <li><a href="../trade/trade_code.html">CODE1</a></li>
+            <li><a href="../trade/trade_code2.html">CODE2</a></li>
           </ul>
         </div>
       </li>
@@ -50,13 +57,14 @@
         <a href="#">HOBBY<span class="caret"></span></a>
         <div>
           <ul>
-            <li><a href="./othello.html">othello</a></li>
-            <li><a href="./translate.html">translate</a></li>
-            <li><a href="./equation.html">equation</a></li>
+            <li><a href="../othello.html">othello</a></li>
+            <li><a href="../translate.html">translate</a></li>
+            <li><a href="../equation.html">equation</a></li>
+            <li><a href="../hobby/equation.html">equation</a></li>
           </ul>
         </div>
       </li>
-      <li><a href="./help.html">HELP</a></li>
+      <li><a href="../help.html">HELP</a></li>
     </ul>
   </div>
 
@@ -64,11 +72,13 @@
     <a href="#trade_main">Mainコード</a>
     <a href="#trade_param">パラメータファイル</a>
     <a href="#trade_currency">標準スプレッド</a>
+    <!-- <a href="#macd">MACD</a>
+    <a href="#ema">EMA</a> -->
   </div>
 
   <div id="D_center">
     <h1>OANDA-Pythonコード  #2</h1>
-    <p><a href="./trade_code.html">CODE1</a>の自動売買コードはまだ不完全である。
+    <p><a href="../trade/trade_code.html">CODE1</a>の自動売買コードはまだ不完全である。
       通貨ペア、時間足等の設定や、重視する指標などにより結果は大きく異なる。
       また、ネットの回線の具合によりデータが取得できずにエラーを吐くことがある。
       そこでトレードの補助として、相場の価格データから現在の加熱具合（売られ過ぎ、買われ過ぎ）を判定する。
@@ -377,8 +387,12 @@
 
     </ol>
   </div>
+  <!-- <script src="./google-code-prettify/prettify.js"></script>
+  <script>prettyPrint();</script> -->
 
   <br><br><br><br>
+
+
 
 </body>
 
