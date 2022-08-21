@@ -11,10 +11,22 @@
   <!-- <script src="../jquery-3.6.0.min.js"></script> -->
   <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
 
-  <script
+  <!-- <script
   type="text/javascript"
   src="https://code.jquery.com/jquery-3.6.0.js"
   integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+  crossorigin="anonymous"></script> -->
+
+  <!-- <script src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script> -->
+
+  <!-- <script src="https://code.jquery.com/jquery-2.2.4.js"
+  integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
+  crossorigin="anonymous"></script> -->
+
+  <script src="https://code.jquery.com/jquery-1.12.4.js"
+  integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
   crossorigin="anonymous"></script>
 
   <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> -->
@@ -37,9 +49,10 @@
           success: function(data) {
             alert('success!!');
           },
-          error: function(){
+          error: function(err){
               //通信失敗時の処
-              alert('通信失敗');
+              alert('通信失敗' + err);
+              // alert('通信失敗');
           }
        });
       </script>
