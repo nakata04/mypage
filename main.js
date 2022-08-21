@@ -1,7 +1,7 @@
 function header(rootDir){
     // print("aaaaaaa");
     // alert(rootDir + "include/header.html");
-    document.write(rootDir + "include/header.html");
+    // document.write(rootDir + "include/header.html");
     // document.write(html);
     $.ajax({
         url: rootDir + "include/header.html",  // 読み込むHTMLファイル
@@ -12,7 +12,7 @@ function header(rootDir){
         success: function(html){
             html = html.replace(/\{\$root\}/g, rootDir); //header.htmlの{$root}を置換
             document.write(html);
-            alert(rootDir + "include/header.html");
+            // alert(rootDir + "include/header.html");
         },
         error: function(err){
             alert(err);
