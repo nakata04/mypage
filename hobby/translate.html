@@ -1,22 +1,18 @@
 <!DOCTYPE html>
 <html>
-<!-- <html lang="ja"> -->
 
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="../cp_navi.css">
-  <!-- <script src="./des.js"></script> -->
   <title>translate</title>
-  <!-- <script src="../header.js"></script> -->
   <!-- <script src="../jquery-3.6.0.min.js"></script> -->
-  <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
 
 
-  <!-- <script
+  <script
   type="text/javascript"
   src="https://code.jquery.com/jquery-3.6.0.js"
   integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-  crossorigin="anonymous"></script> -->
+  crossorigin="anonymous"></script>
 
   <!-- <script src="https://code.jquery.com/jquery-2.2.4.min.js"
   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
@@ -26,75 +22,19 @@
   integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
   crossorigin="anonymous"></script> -->
 
-  <script src="https://code.jquery.com/jquery-1.12.4.js"
+  <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"
   integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
-  crossorigin="anonymous"></script>
+  crossorigin="anonymous"></script> -->
 
-  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> -->
-  <!-- <script>
-    //共通パーツ読み込み
-      $(function() {
-        // alert("jQueryが正常に動作しています！");
-          $("#header").load("header.html");
-          //  $("#footer").load("footer.html");
-          // $("#id")
-    });
-    </script> -->
-
-    
-    <!-- <iframe src="../header.html" frameborder="0"></iframe> -->
-    <!-- <script src="../header.js"></script> -->
-
-    <!-- <script type="text/javascript">
-      $.ajax({
-          url: "../include/header.html",
-          success: function(data) {
-            alert('success!!');
-          },
-          error: function(err){
-              //通信失敗時の処
-              alert('通信失敗' + err);
-              // alert('通信失敗');
-          }
-       });
-      </script> -->
-
-      <!-- <script type="text/javascript">
-        $.ajax({
-            url: "../include/header.html",
-        }).success(function(data) {
-            alert('success!!');
-        }).error(function(data) {
-            //通信失敗時の処
-            alert('通信失敗');
-        });
-      </script> -->
 </head>
 
 <!-- <body bgcolor="#10100E" text="#cccccc"> -->
 
 <body style="background-image: url(../wall/b032.gif);">
-  <!-- <?php include('parts/header.html'); ?> -->
-  <!-- <?php include($_SERVER['DOCUMENT_ROOT']."../header.php"); ?> -->
-  <!-- <?php include("../header.php"); ?> -->
-  <!-- <div id="header"></div> -->
-  <!-- <iframe src="../header.html" frameborder="0"></iframe> -->
+  <!-- html共通部分をJavaScriptで設定する -->
   <script src="../main.js"></script>
   <!-- <script>header("../");</script> -->
 
-  <!-- <a href="http://google.com">Google</a>
-  <script type="text/javascript">
-    $(function(){
-        $("a[href^='http://']").attr("target","_blank");
-    });
-    </script> -->
-
-  <!-- <script type="text/javascript">
-  $(function(){
-$("#header").load("header.html");
-// $("#footer").load("footer.html");
-});
-  </script> -->
   <script type="text/javascript">
     var day = new Date(document.lastModified);
     var y = day.getFullYear();
@@ -110,53 +50,8 @@ $("#header").load("header.html");
     document.write("Last Update: " + y + "/" + m + "/" + d + " (" + w + ")");
   </script>
 
+  <!-- header部分 -->
   <script type="text/javascript">header("../");</script>
-
-
-  <!-- <div id="A_top"> -->
-    <!-- ccccccc -->
-    <!-- <script type="text/javascript">header("../");</script> -->
-    <!-- <div id="header"></div> -->
-    <!-- <script src="../header.js"></script> -->
-    <!-- <script>header();</script> -->
-    <!-- <?php include('../header.html'); ?> -->
-    <!-- <ul>
-      <li><a href="../home.html">HOME</a></li>
-      <li>
-        <a href="../trade.html">TRADE<span class="caret"></span></a>
-        <div>
-          <ul>
-            <li><a href="../trade/indicator.html">Indicator</a></li>
-            <li><a href="../trade/trade_code.html">CODE1</a></li>
-            <li><a href="../trade/trade_code2.html">CODE2</a></li>
-          </ul>
-        </div>
-      </li>
-      <li>
-        <a href="./trade.html">PROJECT<span class="caret"></span></a>
-        <div>
-          <ul>
-            <li><a href="./project/hydro.html">SPH theory</a></li>
-            <li><a href="./project/hydro_code.html">CODE1</a></li>
-            <li><a href="./project/hydro_code2.html">CODE2</a></li>
-          </ul>
-        </div>
-      </li>
-      <li>
-        <a href="#">HOBBY<span class="caret"></a>
-        <div>
-          <ul>
-            <li><a href="../hobby/othello.html">othello</a></li>
-            <li><a href="../hobby/translate.html">translate</a></li>
-            <li><a href="../hobby/equation.html">equation</a></li>
-            <li><a href="../hobby/equation.html">equation</a></li>
-          </ul>
-        </div>
-      </li>
-      <li><a href="../help.html">HELP</a></li>
-    </ul> -->
-  <!-- </div> -->
-
   
   <div id="B_left">
     <ul>
