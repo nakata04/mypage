@@ -2,135 +2,138 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="../cp_navi.css">
-  <title>translate</title>
-  <!-- <script src="../jquery-3.6.0.min.js"></script> -->
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../cp_navi.css">
+    <title>translate</title>
+    <!-- <script src="../jquery-3.6.0.min.js"></script> -->
 
+    <!-- Jquery : ajax通信で必要になる。 -->
+    <script
+        type="text/javascript"
+        src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+        crossorigin="anonymous">
+    </script>
 
-  <script
-  type="text/javascript"
-  src="https://code.jquery.com/jquery-3.6.0.js"
-  integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-  crossorigin="anonymous"></script>
+    <!-- <script src="https://code.jquery.com/jquery-2.2.4.min.js"
+    integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+    crossorigin="anonymous"></script> -->
 
-  <!-- <script src="https://code.jquery.com/jquery-2.2.4.min.js"
-  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
-  crossorigin="anonymous"></script> -->
+    <!-- <script src="https://code.jquery.com/jquery-2.2.4.js"
+    integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
+    crossorigin="anonymous"></script> -->
 
-  <!-- <script src="https://code.jquery.com/jquery-2.2.4.js"
-  integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
-  crossorigin="anonymous"></script> -->
-
-  <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"
-  integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
-  crossorigin="anonymous"></script> -->
+    <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"
+    integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
+    crossorigin="anonymous"></script> -->
 
 </head>
 
 <!-- <body bgcolor="#10100E" text="#cccccc"> -->
 
 <body style="background-image: url(../wall/b032.gif);">
-  <!-- html共通部分をJavaScriptで設定する -->
-  <script src="../main.js"></script>
-  <!-- <script>header("../");</script> -->
-
-  <script type="text/javascript">
-    var day = new Date(document.lastModified);
-    var y = day.getFullYear();
-    var m = day.getMonth() + 1;
-    var d = day.getDate();
-
-    var week = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
-    var w = week[day.getDay()];
-
-    if (m < 10) m = "0" + m; // 数値が1～9の時には
-    if (d < 10) d = "0" + d; // 0 を追加してそろえる
-
-    document.write("Last Update: " + y + "/" + m + "/" + d + " (" + w + ")");
-  </script>
-
-  <!-- header部分 -->
-  <script type="text/javascript">header("../");</script>
-  
-  <div id="B_left">
-    <ul>
-      <li><a href="#death_font">DeathNote風</a></li>
-      <li><a href="#madoka_font">まどマギ風</a></li>
-    </ul>
-  </div>
-
-  <!-- https://mnlab.sakura.ne.jp/garden/death.html -->
-  <div id="D_center">
-    <script type="text/javascript">
-      function handan(text_in) {
-        document.getElementById("text_out").innerHTML = text_in;
-      }
-    </script>
-
-    <h1>fontの変換</h1>
-    <font face="deathnote">
-      <h2 id="death_font">Translate</h1>
-        <p>The human whose name is written in this note shall die.</p>
-    </font>
-
-    <textarea cols="60" rows="10" id="text_death" placeholder="abcd" style="padding: 10px; background-color: #ffffcc;"></textarea>
-    <br>
-    <!-- <input type="text" id="text" rows="5" style="width:30px; height:100px;"> -->
-    <input type="button" value="変換" onclick="handan(text_death.value)">
-    <font face="deathnote">
-      <div id="text_out" style="width: 500px; height: 100px; padding: 10px; overflow-x: scroll; border: 1px solid #333333; background-color: #ffffff;">
-        result
-      </div>
-    </font>
-
-    <br><br><br>
-
-    <font face="madoka">
-      <h2 id="madoka_font">Translate</h1>
-        <p>I'm not afraid of anything anymore because I'm not alone.</p>
-    </font>
+    <!-- html共通部分をJavaScriptで設定する -->
+    <script src="../main.js"></script>
+    <!-- <script>header("../");</script> -->
 
     <script type="text/javascript">
-      function handan1(text_in) {
-        document.getElementById("text_out1").innerHTML = text_in;
-      }
+        var day = new Date(document.lastModified);
+        var y = day.getFullYear();
+        var m = day.getMonth() + 1;
+        var d = day.getDate();
+
+        var week = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+        var w = week[day.getDay()];
+
+        if (m < 10) m = "0" + m; // 数値が1～9の時には
+        if (d < 10) d = "0" + d; // 0 を追加してそろえる
+
+        document.write("Last Update: " + y + "/" + m + "/" + d + " (" + w + ")");
     </script>
 
-    <textarea cols="60" rows="10" id="text_madoka" placeholder="abcd" style="padding: 10px; background-color: #ffffcc;"></textarea>
+    <!-- header部分 -->
+    <script type="text/javascript">header("../");</script>
+    
+    <div id="B_left">
+        <ul>
+            <li><a href="#death_font">DeathNote風</a></li>
+            <li><a href="#madoka_font">まどマギ風</a></li>
+        </ul>
+    </div>
+
+    <!-- https://mnlab.sakura.ne.jp/garden/death.html -->
+    <div id="D_center">
+        <script type="text/javascript">
+            function handan(text_in) {
+                document.getElementById("text_out").innerHTML = text_in;
+            }
+        </script>
+
+        <h1>fontの変換</h1>
+        <font face="deathnote">
+            <h2 id="death_font">Translate</h1>
+            <p>The human whose name is written in this note shall die.</p>
+        </font>
+
+        <textarea cols="60" rows="10" id="text_death" placeholder="abcd" style="padding: 10px; background-color: #ffffcc;"></textarea>
+        <br>
+        <!-- <input type="text" id="text" rows="5" style="width:30px; height:100px;"> -->
+        <input type="button" value="変換" onclick="handan(text_death.value)">
+        <font face="deathnote">
+            <div id="text_out" style="width: 500px; height: 100px; padding: 10px; overflow-x: scroll; border: 1px solid #333333; background-color: #ffffff;">
+                result
+            </div>
+        </font>
+
+        <br><br><br>
+
+        <font face="madoka">
+            <h2 id="madoka_font">Translate</h1>
+            <p>I'm not afraid of anything anymore because I'm not alone.</p>
+        </font>
+
+        <script type="text/javascript">
+            function handan1(text_in) {
+                document.getElementById("text_out1").innerHTML = text_in;
+            }
+        </script>
+
+        <textarea cols="60" rows="10" id="text_madoka" placeholder="abcd" style="padding: 10px; background-color: #ffffcc;"></textarea>
+        <br>
+
+        <!-- <input type="text" id="text" rows="5" style="width:30px; height:100px;"> -->
+        <input type="button" value="変換" onclick="handan1(text_madoka.value)">
+        <font face="madoka">
+            <div id="text_out1" style="width: 500px; height: 100px; padding: 10px; overflow-x: scroll; border: 1px solid #333333; background-color: #ffffff;">
+                result
+            </div>
+        </font>
+
+        <br>
+
+        <p>参考文献</p>
+        <font face="deathnote">
+            <a href="https://mnlab.sakura.ne.jp/garden/death.html">https://mnlab.sakura.ne.jp/garden/death.html</a>
+        </font>
+        <br>
+        <font face="madoka">
+            <a href="https://wiki.puella-magi.net/Deciphering_the_runes#Musical_Font">https://wiki.puella-magi.net/Deciphering_the_runes#Musical_Font</a>
+        </font>
+
+        <br><br><br><br>
+
+    </div>
+
+    <!-- <p>
+        <a href="trade.html">trade</a>
+      </p>
+      <p>
+        <a href="othello.html">othello</a>
+      </p> -->
+
+    <!-- </div> -->
+    <a href="./home.html">HOME</a>
     <br>
-
-    <!-- <input type="text" id="text" rows="5" style="width:30px; height:100px;"> -->
-    <input type="button" value="変換" onclick="handan1(text_madoka.value)">
-    <font face="madoka">
-      <div id="text_out1" style="width: 500px; height: 100px; padding: 10px; overflow-x: scroll; border: 1px solid #333333; background-color: #ffffff;">
-        result
-      </div>
-    </font>
-
-    <br>
-
-    <p>参考文献</p>
-    <font face="deathnote">
-      <a href="https://mnlab.sakura.ne.jp/garden/death.html">https://mnlab.sakura.ne.jp/garden/death.html</a>
-    </font>
-    <br>
-    <font face="madoka">
-      <a href="https://wiki.puella-magi.net/Deciphering_the_runes#Musical_Font">https://wiki.puella-magi.net/Deciphering_the_runes#Musical_Font</a>
-    </font>
-
-    <br><br><br><br>
-
-  </div> -->
-
-  <!-- <p>
-      <a href="trade.html">trade</a>
-    </p>
-    <p>
-      <a href="othello.html">othello</a>
-    </p> -->
-
-  <!-- </div> -->
 </body>
 
 </html>

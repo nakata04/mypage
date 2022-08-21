@@ -2,137 +2,106 @@
 <html>
 
 <head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="../cp_navi.css">
-  <link rel="stylesheet" href="../google-code-prettify/prettify1.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Solve</title>
-  <script lang="python" type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-  <script
-  type="text/javascript"
-  async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
-  </script>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../cp_navi.css">
+    <link rel="stylesheet" href="../google-code-prettify/prettify1.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Solve</title>
+    <script
+        lang="python"
+        type="text/javascript"
+        async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <!-- <script
+    type="text/javascript"
+    async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script> -->
 
-  <!-- Jquery : ajax通信で必要になる。 -->
-  <script
-  type="text/javascript"
-  src="https://code.jquery.com/jquery-3.6.0.js"
-  integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-  crossorigin="anonymous">
-  </script>
+    <!-- Jquery : ajax通信で必要になる。 -->
+    <script
+        type="text/javascript"
+        src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+        crossorigin="anonymous">
+    </script>
 </head>
 
 <body style="background-image: url(../wall/b032.gif);">
-  <!-- html共通部分をJavaScriptで設定する -->
-  <script src="../main.js"></script>
-  <!-- <header>
-    <h1>
-      方程式の解
-    </h1>
-  </header> -->
+    <!-- html共通部分をJavaScriptで設定する -->
+    <script src="../main.js"></script>
+    <!-- <header>
+      <h1>
+        方程式の解
+      </h1>
+    </header> -->
 
-  <script type="text/javascript">
-    var day = new Date(document.lastModified);
-    var y = day.getFullYear();
-    var m = day.getMonth() + 1;
-    var d = day.getDate();
+    <script type="text/javascript">
+        var day = new Date(document.lastModified);
+        var y = day.getFullYear();
+        var m = day.getMonth() + 1;
+        var d = day.getDate();
 
-    var week = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
-    var w = week[day.getDay()];
+        var week = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+        var w = week[day.getDay()];
 
-    if (m < 10) m = "0" + m; // 数値が1～9の時には
-    if (d < 10) d = "0" + d; // 0 を追加してそろえる
+        if (m < 10) m = "0" + m; // 数値が1～9の時には
+        if (d < 10) d = "0" + d; // 0 を追加してそろえる
 
-    document.write("Last Update: " + y + "/" + m + "/" + d + " (" + w + ")");
-  </script>
+        document.write("Last Update: " + y + "/" + m + "/" + d + " (" + w + ")");
+    </script>
 
-  <!-- header部分 -->
-  <script type="text/javascript">header("../");</script>
+    <!-- header部分 -->
+    <script type="text/javascript">header("../");</script>
 
-  <!-- <div id="A_top">
-    <ul>
-      <li><a href="../home.html">HOME</a></li>
-      <li>
-        <a href="../trade/trade.html">TRADE<span class="caret"></span></a>
-        <div>
-          <ul>
-            <li><a href="../trade/indicator.html">Indicator</a></li>
-            <li><a href="../trade/trade_code.html">CODE1</a></li>
-            <li><a href="../trade/trade_code2.html">CODE2</a></li>
-          </ul>
-        </div>
-      </li>
-      <li>
-        <a href="./trade.html">PROJECT<span class="caret"></span></a>
-        <div>
-          <ul>
-            <li><a href="./project/hydro.html">SPH theory</a></li>
-            <li><a href="./project/hydro_code.html">CODE1</a></li>
-            <li><a href="./project/hydro_code2.html">CODE2</a></li>
-          </ul>
-        </div>
-      </li>
-      <li>
-        <a href="#">HOBBY</a>
-        <div>
-          <ul>
-            <li><a href="../hobby/othello.html">othello</a></li>
-            <li><a href="../hobby/translate.html">translate</a></li>
-            <li><a href="../hobby/equation.html">equation</a></li>
-            <li><a href="../hobby/equation.html">equation</a></li>
-          </ul>
-        </div>
-      </li>
-      <li><a href="../help.html">HELP</a></li>
-    </ul>
-  </div> -->
-
-  <div id="B_left">
-    <a href="#quadratic">二次関数</a>
-  </div>
-
-  <div id="D_center">
-    <h1 id="quadratic">二次関数</h1>
-
-    <div>
-      <p class="centering">
-        <canvas id="myGraph" width="400" height="400">Canvasに未対応です。</canvas>
-      </p>
-      <div id="quote">
-        <form name="myFORM">
-          y =
-          <input type="number" size="2" name="myC1" value="1">x<sup>2</sup>＋
-          <input type="number" size="2" name="myC2" value="1">x＋
-          <input type="number" size="2" name="myC3" value="-2">
-          <br>
-          <input type="button" style="width: 100px; height: 50px; padding: 10px; font-size:50px;" value=" 決定 " id="solve" onclick="drawParabola()">
-          <input type="button" style="width: 100px; height: 50px; padding: 10px; font-size:50px;" value=" リセット " onclick="graphSheet(Xmin, Xmax, Ymin, Ymax)">
-        </form>
-      </div>
-      <br />
-    </div><!-- end of browser-size -->
-
-    <div class="answerValues1">
-      <p>x軸との交点</p>
-      <p id="answerValue11"></p>
-      <p id="answerValue21"></p>
-      <p>切片</p>
-      <p id="interception"></p>
+    <div id="B_left">
+        <a href="#quadratic">二次関数</a>
     </div>
 
-    <script type="text/javascript" src="equation.js"></script>
+    <div id="D_center">
+        <h1 id="quadratic">二次関数</h1>
 
-    <br><br>
+        <div>
+            <p class="centering">
+                <canvas id="myGraph" width="400" height="400">Canvasに未対応です。</canvas>
+            </p>
+            <div id="quote">
+                <form name="myFORM">
+                    y =
+                    <input type="number" size="2" name="myC1" value="1">x<sup>2</sup>＋
+                    <input type="number" size="2" name="myC2" value="1">x＋
+                    <input type="number" size="2" name="myC3" value="-2">
+                    <br>
+                    <input type="button" style="width: 100px; height: 50px; padding: 10px; font-size:50px;" value=" 決定 " id="solve" onclick="drawParabola()">
+                    <input type="button" style="width: 100px; height: 50px; padding: 10px; font-size:50px;" value=" リセット " onclick="graphSheet(Xmin, Xmax, Ymin, Ymax)">
+                </form>
+            </div>
+            <!-- <br /> -->
+        </div><!-- end of browser-size -->
 
-    <p>参考文献</p>
-    <a href="https://poland-it-blog.com/quadratic_formula/">https://poland-it-blog.com/quadratic_formula/</a>
+        <div class="answerValues1">
+            <p>x軸との交点</p>
+            <p id="answerValue11"></p>
+            <p id="answerValue21"></p>
+            <p>切片</p>
+            <p id="interception"></p>
+        </div>
+
+        <script type="text/javascript" src="equation.js"></script>
+
+        <br><br>
+
+        <p>参考文献</p>
+        <a href="https://poland-it-blog.com/quadratic_formula/">https://poland-it-blog.com/quadratic_formula/</a>
+        <br>
+        <a href="http://gascon.jp/note/note_006.html">http://gascon.jp/note/note_006.html</a>
+
+    </div>
+
+    <br><br><br><br><br><br>
+
+    <a href="../home.html">HOME</a>
     <br>
-    <a href="http://gascon.jp/note/note_006.html">http://gascon.jp/note/note_006.html</a>
-
-  </div>
-
-  <br><br><br><br><br><br>
 
 </body>
 

@@ -2,102 +2,87 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="../cp_navi.css">
-  <link rel="stylesheet" href="../google-code-prettify/prettify1.css">
-  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/desert.css"> -->
-  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/doxy.css"> -->
-  <title>OANDA Python code</title>
-  <script lang="python" type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-  <!-- <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script> -->
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../cp_navi.css">
+    <link rel="stylesheet" href="../google-code-prettify/prettify1.css">
+    <title>OANDA Python code</title>
+    <script
+        lang="python"
+        type="text/javascript"
+        async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+
+    <!-- Jquery : ajax通信で必要になる。 -->
+    <script
+        type="text/javascript"
+        src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+        crossorigin="anonymous">
+    </script>
 </head>
 
 <!-- <body> -->
 
 <body style="background-image: url(../wall/b029.gif);">
+    <!-- html共通部分をJavaScriptで設定する -->
+    <script src="../main.js"></script>
 
-  <script src="../google-code-prettify/prettify.js"></script>
-  <!-- <script src="./google-code-prettify/lang-cl.js"></script> -->
-  <!-- <script src="./google-code-prettify/lang-css.js"></script> -->
-  <script>
-    window.addEventListener("load", function() {
-      PR.prettyPrint();
-    });
-  </script>
+    <script src="../google-code-prettify/prettify.js"></script>
 
-  <script type="text/javascript">
-    var day = new Date(document.lastModified);
-    var y = day.getFullYear();
-    var m = day.getMonth() + 1;
-    var d = day.getDate();
+    <script>
+        window.addEventListener("load", function() {
+            PR.prettyPrint();
+        });
+    </script>
 
-    var week = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
-    var w = week[day.getDay()];
+    <script type="text/javascript">
+        var day = new Date(document.lastModified);
+        var y = day.getFullYear();
+        var m = day.getMonth() + 1;
+        var d = day.getDate();
 
-    if (m < 10) m = "0" + m; // 数値が1～9の時には
-    if (d < 10) d = "0" + d; // 0 を追加してそろえる
+        var week = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+        var w = week[day.getDay()];
 
-    document.write("Last Update: " + y + "/" + m + "/" + d + " (" + w + ")");
-  </script>
+        if (m < 10) m = "0" + m; // 数値が1～9の時には
+        if (d < 10) d = "0" + d; // 0 を追加してそろえる
 
-  <div id="A_top">
-    <ul>
-      <li><a href="../home.html">HOME</a></li>
-      <li>
-        <a href="../trade.html">TRADE<span class="caret"></span></a>
-        <div>
-          <ul>
-            <li><a href="../trade/indicator.html">Indicator</a></li>
-            <li><a href="../trade/trade_code.html">CODE1</a></li>
-            <li><a href="../trade/trade_code2.html">CODE2</a></li>
-          </ul>
-        </div>
-      </li>
-      <li>
-        <a href="#">HOBBY<span class="caret"></span></a>
-        <div>
-          <ul>
-            <li><a href="../hobby/othello.html">othello</a></li>
-            <li><a href="../hobby/translate.html">translate</a></li>
-            <li><a href="../hobby/equation.html">equation</a></li>
-            <li><a href="../hobby/equation.html">equation</a></li>
-          </ul>
-        </div>
-      </li>
-      <li><a href="../help.html">HELP</a></li>
-    </ul>
-  </div>
+        document.write("Last Update: " + y + "/" + m + "/" + d + " (" + w + ")");
+    </script>
 
-  <div id="B_left">
-    <a href="#trade_main">Mainコード</a>
-    <a href="#trade_param">パラメータファイル</a>
-    <a href="#trade_currency">標準スプレッド</a>
-    <!-- <a href="#macd">MACD</a>
-    <a href="#ema">EMA</a> -->
-  </div>
+    <!-- header部分 -->
+    <script type="text/javascript">header("../");</script>
 
-  <div id="D_center">
-    <h1>OANDA-Pythonコード  #2</h1>
-    <p><a href="../trade/trade_code.html">CODE1</a>の自動売買コードはまだ不完全である。
-      通貨ペア、時間足等の設定や、重視する指標などにより結果は大きく異なる。
-      また、ネットの回線の具合によりデータが取得できずにエラーを吐くことがある。
-      そこでトレードの補助として、相場の価格データから現在の加熱具合（売られ過ぎ、買われ過ぎ）を判定する。
-      価格データは<a href="https://www.oanda.jp">OANDA</a>から入手する。</p>
+    <div id="B_left">
+        <a href="#trade_main">Mainコード</a>
+        <a href="#trade_param">パラメータファイル</a>
+        <a href="#trade_currency">標準スプレッド</a>
+        <!-- <a href="#macd">MACD</a>
+        <a href="#ema">EMA</a> -->
+    </div>
 
-    <h2>相場判定</h2>
-    <p>入手した為替データから、RSI、MACDの指標を計算し総合的な相場の過熱度を判定する。
-      判定には2つの異なる時間足を使用する。
-      短期足と長期足共に売られ過ぎまたは買われ過ぎのとき、シグナルを出す。
-      更新時の価格を時間足の暫定的な終値とすることで、過敏に評価することができる。
-      本コードはオシレーター系の指標のみで構成されているため、トレンド化での判定に弱い欠点がある。
-    </p>
-    <ol type="1">
-      <li id="trade_main">Mainコード</li>
+    <div id="D_center">
+        <h1>OANDA-Pythonコード  #2</h1>
+        <p><a href="../trade/trade_code.html">CODE1</a>の自動売買コードはまだ不完全である。
+        通貨ペア、時間足等の設定や、重視する指標などにより結果は大きく異なる。
+        また、ネットの回線の具合によりデータが取得できずにエラーを吐くことがある。
+        そこでトレードの補助として、相場の価格データから現在の加熱具合（売られ過ぎ、買われ過ぎ）を判定する。
+        価格データは<a href="https://www.oanda.jp">OANDA</a>から入手する。</p>
 
-      <br>
-      <!-- http://www.yamamo10.jp/yamamoto/internet/WEB/regulation/GCP/index.php -->
-      <div style="width: 95%; height: 600px; overflow-x: scroll; overflow-y: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
-        <pre><code class="prettyprint lang-py linenums">    # coding: utf-8
+        <h2>相場判定</h2>
+        <p>入手した為替データから、RSI、MACDの指標を計算し総合的な相場の過熱度を判定する。
+        判定には2つの異なる時間足を使用する。
+        短期足と長期足共に売られ過ぎまたは買われ過ぎのとき、シグナルを出す。
+        更新時の価格を時間足の暫定的な終値とすることで、過敏に評価することができる。
+        本コードはオシレーター系の指標のみで構成されているため、トレンド化での判定に弱い欠点がある。
+        </p>
+        <ol type="1">
+            <li id="trade_main">Mainコード</li>
+
+            <br>
+            <!-- http://www.yamamo10.jp/yamamoto/internet/WEB/regulation/GCP/index.php -->
+            <div style="width: 95%; height: 600px; overflow-x: scroll; overflow-y: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
+                <pre><code class="prettyprint lang-py linenums">    # coding: utf-8
     import configparser
 
     # ファイルの存在チェック用モジュール
@@ -375,24 +360,25 @@
             print("    {} : 買われ過ぎ".format(INSTRUMENT[i]))
 
         i += 1</code></pre>
-      </div>
+            </div>
 
-      <br>
-      <li id="trade_param">パラメータファイル</li>
-      <p><a href="./trade_code.html">CODE1</a>と同様</p>
+            <br>
+            <li id="trade_param">パラメータファイル</li>
+            <p><a href="./trade_code.html">CODE1</a>と同様</p>
 
-      <br>
-      <li id="trade_currency">標準スプレッド</li>
-      <p><a href="./trade_code.html">CODE1</a>と同様</p>
+            <br>
+            <li id="trade_currency">標準スプレッド</li>
+            <p><a href="./trade_code.html">CODE1</a>と同様</p>
 
-    </ol>
-  </div>
-  <!-- <script src="./google-code-prettify/prettify.js"></script>
-  <script>prettyPrint();</script> -->
+        </ol>
+    </div>
+    <!-- <script src="./google-code-prettify/prettify.js"></script>
+    <script>prettyPrint();</script> -->
 
-  <br><br><br><br>
+    <br><br><br><br>
 
-
+    <a href="../home.html">HOME</a>
+    <br>
 
 </body>
 

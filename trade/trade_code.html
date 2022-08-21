@@ -2,126 +2,104 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="../cp_navi.css">
-  <link rel="stylesheet" href="../google-code-prettify/prettify1.css">
-  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/desert.css"> -->
-  <!-- <link rel="stylesheet" href="./google-code-prettify/skins/doxy.css"> -->
-  <title>OANDA Python code</title>
-  <script lang="python" type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-  <!-- <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script> -->
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../cp_navi.css">
+    <link rel="stylesheet" href="../google-code-prettify/prettify1.css">
+    <!-- <link rel="stylesheet" href="./google-code-prettify/skins/desert.css"> -->
+    <!-- <link rel="stylesheet" href="./google-code-prettify/skins/doxy.css"> -->
+    <title>OANDA Python code</title>
+    <script
+        lang="python"
+        type="text/javascript"
+        async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+
+    <!-- Jquery : ajax通信で必要になる。 -->
+    <script
+        type="text/javascript"
+        src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+        crossorigin="anonymous">
+    </script>
 </head>
 
 <!-- <body> -->
 
 <body style="background-image: url(../wall/b029.gif);">
+    <!-- html共通部分をJavaScriptで設定する -->
+    <script src="../main.js"></script>
 
-  <script src="../google-code-prettify/prettify.js"></script>
-  <!-- <script src="./google-code-prettify/lang-cl.js"></script> -->
-  <!-- <script src="./google-code-prettify/lang-css.js"></script> -->
-  <script>
-    window.addEventListener("load", function() {
-      PR.prettyPrint();
-    });
-  </script>
+    <script src="../google-code-prettify/prettify.js"></script>
+    <!-- <script src="./google-code-prettify/lang-cl.js"></script> -->
+    <!-- <script src="./google-code-prettify/lang-css.js"></script> -->
+    <script>
+        window.addEventListener("load", function() {
+        PR.prettyPrint();
+        });
+    </script>
 
-  <script type="text/javascript">
-    var day = new Date(document.lastModified);
-    var y = day.getFullYear();
-    var m = day.getMonth() + 1;
-    var d = day.getDate();
+    <script type="text/javascript">
+        var day = new Date(document.lastModified);
+        var y = day.getFullYear();
+        var m = day.getMonth() + 1;
+        var d = day.getDate();
 
-    var week = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
-    var w = week[day.getDay()];
+        var week = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+        var w = week[day.getDay()];
 
-    if (m < 10) m = "0" + m; // 数値が1～9の時には
-    if (d < 10) d = "0" + d; // 0 を追加してそろえる
+        if (m < 10) m = "0" + m; // 数値が1～9の時には
+        if (d < 10) d = "0" + d; // 0 を追加してそろえる
 
-    document.write("Last Update: " + y + "/" + m + "/" + d + " (" + w + ")");
-  </script>
+        document.write("Last Update: " + y + "/" + m + "/" + d + " (" + w + ")");
+    </script>
 
-  <div id="A_top">
-    <ul>
-      <li><a href="../home.html">HOME</a></li>
-      <li>
-        <a href="../trade.html">TRADE<span class="caret"></span></a>
-        <div>
-          <ul>
-            <li><a href="../trade/indicator.html">Indicator</a></li>
-            <li><a href="../trade/trade_code.html">CODE1</a></li>
-            <li><a href="../trade/trade_code2.html">CODE2</a></li>
-          </ul>
-        </div>
-      </li>
-      <li>
-        <a href="./trade.html">PROJECT<span class="caret"></span></a>
-        <div>
-          <ul>
-            <li><a href="./project/hydro.html">SPH theory</a></li>
-            <li><a href="./project/hydro_code.html">CODE1</a></li>
-            <li><a href="./project/hydro_code2.html">CODE2</a></li>
-          </ul>
-        </div>
-      </li>
-      <li>
-        <a href="#">HOBBY<span class="caret"></span></a>
-        <div>
-          <ul>
-            <li><a href="../hobby/othello.html">othello</a></li>
-            <li><a href="../hobby/translate.html">translate</a></li>
-            <li><a href="../hobby/equation.html">equation</a></li>
-            <li><a href="../hobby/equation.html">equation</a></li>
-          </ul>
-        </div>
-      </li>
-      <li><a href="../help.html">HELP</a></li>
-    </ul>
-  </div>
+    <!-- header部分 -->
+    <script type="text/javascript">header("../");</script>
 
-  <div id="B_left">
-    <a href="#trade_main">Mainコード</a>
-    <a href="#trade_param">パラメータファイル</a>
-    <a href="#trade_currency">標準スプレッド</a>
-    <!-- <a href="#macd">MACD</a>
-    <a href="#ema">EMA</a> -->
-  </div>
+    <div id="B_left">
+        <a href="#trade_main">Mainコード</a>
+        <a href="#trade_param">パラメータファイル</a>
+        <a href="#trade_currency">標準スプレッド</a>
+        <!-- <a href="#macd">MACD</a>
+        <a href="#ema">EMA</a> -->
+    </div>
 
-  <div id="D_center">
-    <h1>OANDA-Pythonコード  #1</h1>
-    <p><a href="https://www.oanda.jp">OANDA</a>より相場の価格データを入手する。
-      そのデータを元に今後の相場の展望を予測する。</p>
+    <div id="D_center">
+        <h1>OANDA-Pythonコード  #1</h1>
+        <p><a href="https://www.oanda.jp">OANDA</a>より相場の価格データを入手する。
+        そのデータを元に今後の相場の展望を予測する。</p>
 
-    <h2>自動売買</h2>
-    <p>入手した為替データから、RSI、MACDなどの指標を計算しエントリーの機会を探る。
-      エントリーのチャンスが来たら自動でエントリーを行い、また決済も行う。</p>
-    <ol type="1">
-      <li id="trade_main">Mainコード</li>
-      <!-- <p>全体の変動幅から、相場の過熱感（買われ過ぎ、売られ過ぎ）を判断する</p> -->
+        <h2>自動売買</h2>
+        <p>入手した為替データから、RSI、MACDなどの指標を計算しエントリーの機会を探る。
+        エントリーのチャンスが来たら自動でエントリーを行い、また決済も行う。</p>
+        <ol type="1">
+        <li id="trade_main">Mainコード</li>
+        <!-- <p>全体の変動幅から、相場の過熱感（買われ過ぎ、売られ過ぎ）を判断する</p> -->
 
-      <!-- \begin{align}
-    F(\omega) = \cfrac{1}{\sqrt{2\pi}}\int_{-\infty}^{+\infty}f(t)e^{i\omega t}dt
-    \end{align} -->
-      <!-- \begin{align}
-      \mathrm{RS} &= \frac{期間中の平均上昇幅}{期間中の平均下落幅} \equiv \frac{\alpha}{\beta} \\
-      \mathrm{RSI} &= \left( 1 - \frac{1}{1 - \mathrm{RS}} \right) \times 100 \\
-      &= \left( 1 - \frac{\beta}{\beta - \alpha} \right) \times 100
-      \end{align}
+        <!-- \begin{align}
+        F(\omega) = \cfrac{1}{\sqrt{2\pi}}\int_{-\infty}^{+\infty}f(t)e^{i\omega t}dt
+        \end{align} -->
+        <!-- \begin{align}
+        \mathrm{RS} &= \frac{期間中の平均上昇幅}{期間中の平均下落幅} \equiv \frac{\alpha}{\beta} \\
+        \mathrm{RSI} &= \left( 1 - \frac{1}{1 - \mathrm{RS}} \right) \times 100 \\
+        &= \left( 1 - \frac{\beta}{\beta - \alpha} \right) \times 100
+        \end{align}
 
-      <ol type="a">
-        <li>平均上昇幅 (sum_positive)</li>
-        最初 : (14日間の上昇幅の合計)÷14
+        <ol type="a">
+            <li>平均上昇幅 (sum_positive)</li>
+            最初 : (14日間の上昇幅の合計)÷14
+            <br>
+            以降 : (前日までの平均上昇幅 × (14-1)+直近の上昇幅)÷14
+            <li>平均下落幅 (sum_negative)</li>
+            最初 : (14日間の下落幅の合計)÷14
+            <br>
+            以降 : (前日までの平均下落幅 × (14-1)+直近の下落幅)÷14
+        </ol> -->
+
         <br>
-        以降 : (前日までの平均上昇幅 × (14-1)+直近の上昇幅)÷14
-        <li>平均下落幅 (sum_negative)</li>
-        最初 : (14日間の下落幅の合計)÷14
-        <br>
-        以降 : (前日までの平均下落幅 × (14-1)+直近の下落幅)÷14
-      </ol> -->
-
-      <br>
-      <!-- http://www.yamamo10.jp/yamamoto/internet/WEB/regulation/GCP/index.php -->
-      <div style="width: 95%; height: 600px; overflow-x: scroll; overflow-y: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
-        <pre><code class="prettyprint lang-py linenums">    # coding: utf-8
+        <!-- http://www.yamamo10.jp/yamamoto/internet/WEB/regulation/GCP/index.php -->
+        <div style="width: 95%; height: 600px; overflow-x: scroll; overflow-y: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
+            <pre><code class="prettyprint lang-py linenums">    # coding: utf-8
     import configparser
 
     # ファイルの存在チェック用モジュール
@@ -1291,18 +1269,18 @@
                 last_data = data
             print("aaa")
             time.sleep(10)</code></pre>
-      </div>
+        </div>
 
-  <br>
-  <li id="trade_param">パラメータファイル</li>
+        <br>
+        <li id="trade_param">パラメータファイル</li>
 
   <!-- \begin{align}
   \mathrm{MACD} &= 短期\mathrm{EMA}_{(k)} - 長期\mathrm{EMA}_{(k)} \\
   \mathrm{SIGNAL} &= \frac{1}{n} \sum_{i=0}^{n-1} \mathrm{MACD}_{(k)}
   \end{align} -->
 
-  <div style="width: 95%; height: 600px; overflow-x: scroll; overflow-x: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
-    <pre><code class="prettyprint linenums">    [DEFAULT]
+        <div style="width: 95%; height: 600px; overflow-x: scroll; overflow-x: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
+            <pre><code class="prettyprint linenums">    [DEFAULT]
     account_id     = XXX-XXX-XXXXXXXX-XXX
     api_key        = xxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxx
 
@@ -1409,46 +1387,48 @@
     SIGNAL_SMOOTH  = 9
     STOCH_K        = 14
     STOCH_D        = 3</code></pre>
-  </div>
+        </div>
 
 
-  <br>
-  <li id="trade_currency">標準スプレッド</li>
-  <p>エントリーの条件が揃ってもスプレッドが大きければ、そのポジションは弱くなってしまう。
-  そこで、取引所の標準的なスプレッドに対して、現在のスプレッドが数倍に広がってしまっているときにエントリーを見送る。</p>
-  <!-- \begin{align}
-  \mathrm{EMA}_{(1)} &= \frac{1}{n} \sum_{i=0}^{n-1} 終値(i) \\
-  \mathrm{EMA}_{(k)} &= \mathrm{EMA}_{(k-1)} + \frac{2}{n+1} \times (終値 - \mathrm{EMA}_{(k-1)}) \ \ \ \ \ (k \geq 2)
-  \end{align} -->
-  <div style="width: 95%; overflow-x: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
-    <pre><code class="prettyprint linenums">  [USD_JPY]
-  SPREAD      = 0.17
-  PIPS_ADJUST = 100
-  [EUR_JPY]
-  SPREAD      = 0.49
-  PIPS_ADJUST = 100
-  [GBP_JPY]
-  SPREAD      = 0.99
-  PIPS_ADJUST = 100
-  [AUD_JPY]
-  SPREAD      = 0.69
-  PIPS_ADJUST = 100
-  [NZD_JPY]
-  SPREAD      = 1.19
-  PIPS_ADJUST = 100
-  [EUR_USD]
-  SPREAD      = 0.38
-  PIPS_ADJUST = 10000
-  [GBP_USD]
-  SPREAD      = 0.89
-  PIPS_ADJUST = 10000</code></pre>
-      </div>
-    </ol>
-  </div>
-  <!-- <script src="./google-code-prettify/prettify.js"></script>
-  <script>prettyPrint();</script> -->
+        <br>
+        <li id="trade_currency">標準スプレッド</li>
+        <p>エントリーの条件が揃ってもスプレッドが大きければ、そのポジションは弱くなってしまう。
+        そこで、取引所の標準的なスプレッドに対して、現在のスプレッドが数倍に広がってしまっているときにエントリーを見送る。</p>
+    <!-- \begin{align}
+    \mathrm{EMA}_{(1)} &= \frac{1}{n} \sum_{i=0}^{n-1} 終値(i) \\
+    \mathrm{EMA}_{(k)} &= \mathrm{EMA}_{(k-1)} + \frac{2}{n+1} \times (終値 - \mathrm{EMA}_{(k-1)}) \ \ \ \ \ (k \geq 2)
+    \end{align} -->
+        <div style="width: 95%; overflow-x: scroll; padding: 10px; margin-bottom: 10px; border: 1px solid #333333; background-color: #ffffcc;">
+            <pre><code class="prettyprint linenums">  [USD_JPY]
+    SPREAD      = 0.17
+    PIPS_ADJUST = 100
+    [EUR_JPY]
+    SPREAD      = 0.49
+    PIPS_ADJUST = 100
+    [GBP_JPY]
+    SPREAD      = 0.99
+    PIPS_ADJUST = 100
+    [AUD_JPY]
+    SPREAD      = 0.69
+    PIPS_ADJUST = 100
+    [NZD_JPY]
+    SPREAD      = 1.19
+    PIPS_ADJUST = 100
+    [EUR_USD]
+    SPREAD      = 0.38
+    PIPS_ADJUST = 10000
+    [GBP_USD]
+    SPREAD      = 0.89
+    PIPS_ADJUST = 10000</code></pre>
+        </div>
+        </ol>
+    </div>
+    <!-- <script src="./google-code-prettify/prettify.js"></script>
+    <script>prettyPrint();</script> -->
 
-  <br><br><br><br>
+    <br><br><br><br>
+
+    <a href="../home.html">HOME</a>
 
 
 
