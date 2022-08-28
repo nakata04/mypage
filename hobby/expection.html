@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../cp_navi.css">
+
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"> -->
+    <title>GitHub更新</title>
+
+    <!-- texを認識するのに必要 -->
+    <script
+        lang="python"
+        type="text/javascript"
+        async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+
+    <!-- Jquery : ajax通信で必要になる。 -->
+    <script
+        type="text/javascript"
+        src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+        crossorigin="anonymous">
+    </script>
+</head>
+
+<!-- <body bgcolor="#10100E" text="#cccccc"> -->
+
+<body style="background-image: url(../wall/b032.gif);">
+<!-- <body style="background-image: url(./wall/b032.gif);"> -->
+    <!-- html共通部分をJavaScriptで設定する -->
+    <script src="../main.js"></script>
+
+    <script type="text/javascript">
+        var day = new Date(document.lastModified);
+        var y = day.getFullYear();
+        var m = day.getMonth() + 1;
+        var d = day.getDate();
+
+        var week = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+        var w = week[day.getDay()];
+
+        if (m < 10) m = "0" + m; // 数値が1～9の時には
+        if (d < 10) d = "0" + d; // 0 を追加してそろえる
+
+        document.write("Last Update: " + y + "/" + m + "/" + d + " (" + w + ")");
+    </script>
+
+    <!-- header部分 -->
+    <script type="text/javascript">header("../");</script>
+
+    <div id="B_left">
+        <ul>
+            <li><a href="#">TOP</a></li>
+            <li><a href="#">ABOUT</a></li>
+            <li><a href="#">DIARY</a></li>
+            <li><a href="#">BBS</a></li>
+        </ul>
+    </div>
+
+    <!-- <div align="center"> -->
+    <div id="D_center">
+        <header>
+            <h1>マーチンゲール法</h1>
+        </header>
+
+        <p>マーチンゲール方とはギャンブルなどで使用される必勝法の一つとされている。
+            一度の取引で予想が外れ負けたときに、次の掛け金を2倍にしていく。
+            これを勝つまで続けて利益を出す手法である。賭け金は取引に勝利するとリセットされる。
+            例えば、賭け金が1,000円の勝負で負けたとき、次の勝負では2,000円になる。
+            さらに負け続けると4,000円、8,000円、16,000円となる。
+        </p>
+
+        <li>シミュレートする</li>
+        <p>初期賭け金   : a</p>
+        <p>勝利する確率     : w</p>
+        <p>倍率 : s</p>
+
+        <p>En : n回目の払い戻しの期待値</p>
+        <p>Pn : n回目で勝利する確率</p>
+        \begin{align}
+        \mathrm{E}_n &= 払い戻し \times 勝利する確率\\
+            &= 倍率[s] \times 初期賭け金[a] \times 勝利する確率[w]
+        \end{align}
+
+        <p>n=1のとき</p>
+        \begin{align}
+            n\ &=\ 1\\
+            \mathrm{E}_1\ &=\ swa
+            \mathrm{P}_1\ &=\ w
+        \end{align}
+
+        <p>n=2のとき</p>
+        <p>確率と賭け金<br>
+            (1) wの確率で賭け金a<br>
+            (0) (1-w)の確率で賭け金sa
+        </p>
+        \begin{align}
+            n\ &=\ 2\\
+            \mathrm{E}_2\ &=\ saw^2\ +\ s^2a(1-w)w\\
+            \mathrm{P}_2\ &=\ w^2\ +\ (1-w)w\ =\ w
+        \end{align}
+
+        <p>n=3のとき</p>
+        <p>確率と賭け金<br>
+            (11 01) P2=w の確率で賭け金a<br>
+            (10) w(1-w) の確率で賭け金sa<br>
+            (00) (1-w)^2 の確率で賭け金s^2 a
+        </p>
+        \begin{align}
+            n\ &=\ 3\\
+            \mathrm{E}_3\ &=\ saw^2\ +\ s^2a(1-w)w^2\ +\ s^3a(1-w)^2w\\
+            \mathrm{P}_3\ &=\ w^2\ +\ (1-w)w^2\ +\ w(1-w)^2\ =\ w
+        \end{align}
+
+        <p>n=4のとき</p>
+        <p>確率と賭け金<br>
+            (111 011 001 101) P3=w の確率で賭け金a<br>
+            (110 010) P2(1-w)=w(1-w) の確率で賭け金sa<br>
+            (100) w(1-w)^2 の確率で賭け金s^2 a<br>
+            (000) (1-w)^3 の確率で賭け金s^3 a
+        </p>
+        \begin{align}
+            n\ &=\ 4\\
+            \mathrm{E}_4\ &=\ saw^2\ +\ s^2a(1-w)w^2\ +\ s^3a(1-w)^2w^2\ +\ s^4a(1-w)^3w\\
+            &=\ \sum_{k=1}^{3} s^k(1-w)^{k-1}w^2 + s^4a(1-w)^3w\\
+            &=\ \sum_{k=1}^{4} s^k(1-w)^{k-1}w^2 + s^4a(1-w)^4w\\
+            \mathrm{P}_4\ &=\ w^2\ + w^2(1-w)\ +\ w^2(1-w)^2\ +\ w(1-w)^3\ =\ w
+        \end{align}
+
+        <p>n=5のとき</p>
+        <p>確率と賭け金<br>
+            (1111 0111 0011 1011 1101 1001 0101 0001) P4=w の確率で賭け金a<br>
+            (1110 0110 0010 1010) P3(1-w)=w(1-w) の確率で賭け金sa<br>
+            (1100 0100) P2(1-w)^2=w(1-w)^2 の確率で賭け金s^2 a<br>
+            (1000) w(1-w)^3 の確率で賭け金s^3 a<br>
+            (0000) (1-w)^4 の確率で賭け金s^4 a
+        </p>
+        \begin{align}
+            n\ &=\ 5\\
+            \mathrm{E}_5\ &=\ saw^2\ +\ s^2a(1-w)w^2\ +\ s^3a(1-w)^2w^2\ +\ s^4a(1-w)^3w^2 + s^5a(1-w)^4w\\
+            &=\ \sum_{k=1}^{4} s^k(1-w)^{k-1}w^2 + s^5a(1-w)^4w\\
+            &=\ \sum_{k=1}^{5} s^k(1-w)^{k-1}w^2 + s^5a(1-w)^5w\\
+            \mathrm{P}_5\ &=\ w^2\ +\ w^2(1-w)\ +\ w^2(1-w)^2\ +\ w^2(1-w)^3\ +\ w(1-w)^4\ =\ w
+        \end{align}
+
+        <p>[仮定] 任意のnのとき</p>
+        \begin{align}
+            \mathrm{E}_n\ &=\ \sum_{k=1}^{n} s^kw^2(1-w)^{k-1} + s^naw(1-w)^n\\
+            \mathrm{P}_n\ &=\ w
+        \end{align}
+    </div>
+
+    <div>
+        <p class="centering">
+            <canvas id="myGraph" width="400" height="400">Canvasに未対応です。</canvas>
+        </p>
+        <div id="quote">
+            <form name="myFORM">
+                y =
+                <input type="number" size="2" name="myC1" value="1">x<sup>2</sup>＋
+                <input type="number" size="2" name="myC2" value="1">x＋
+                <input type="number" size="2" name="myC3" value="-2">
+                <br>
+                <input type="button" style="width: 100px; height: 50px; padding: 10px; font-size:50px;" value=" 決定 " id="solve" onclick="drawParabola()">
+                <input type="button" style="width: 100px; height: 50px; padding: 10px; font-size:50px;" value=" リセット " onclick="graphSheet(Xmin, Xmax, Ymin, Ymax)">
+            </form>
+        </div>
+        <!-- <br /> -->
+    </div><!-- end of browser-size -->
+
+    <script type="text/javascript" src="expection.js"></script>
+
+    <br><br><br><br>
+
+    <a href="../home.html">HOME</a>
+    <br><br>
+
+</body>
+
+</html>

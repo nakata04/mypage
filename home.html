@@ -6,7 +6,14 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="./cp_navi.css">
     <title>HOME</title>
-    <IMG SRC="/cgi-bin/Count.cgi?df=x.dat">
+    <!-- <IMG SRC="/cgi-bin/Count.cgi?df=x.dat"> -->
+
+    <!-- 楽譜の読み込みに必要 -->
+    <!-- <script type="text/javascript" src="./abcjs/abcjs_basic_midi_3.0-min.js" ></script>
+    <script type="text/javascript" src="./abcjs/abcjs_basic_2.3-min.js" ></script> -->
+    <script type="text/javascript" src="./abcjs/abcjs-basic-min.js" ></script>
+    <!-- <link rel="stylesheet" href="./abcjs/abcjs-audio.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"> -->
 </head>
 
 <!-- <body bgcolor="#10100E" text="#cccccc"> -->
@@ -61,6 +68,7 @@
                         <li><a href="./hobby/translate.html">translate</a></li>
                         <li><a href="./hobby/equation.html">equation</a></li>
                         <li><a href="./hobby/github.html">github</a></li>
+                        <li><a href="./hobby/expection.html">期待値</a></li>
                     </ul>
                 </div>
             </li>
@@ -78,14 +86,23 @@
       </ul>
     </div> -->
 
-    <!-- <div id="B_left">
+    <div id="B_left">
       <ul>
-        <li><a href="#">TOP</a></li>
-        <li><a href="#">ABOUT</a></li>
-        <li><a href="#">DIARY</a></li>
-        <li><a href="#">BBS</a></li>
+        <li><a href="#calendar">googleカレンダー</a></li>
+        <li><a href="#map">googleマップ</a></li>
+        <li><a href="#youtube">youtube</a></li>
+        <li><a href="#photo">写真</a></li>
       </ul>
-    </div> -->
+    </div>
+
+    <div id="C_right">
+        <ul>
+            <!-- <br> -->
+            <h2>mysite</h2>
+            <img src="./figure/qrcode.png" width="150px" alt="qrcode">
+        </ul>
+        
+    </div>
 
     <!-- <div align="center"> -->
     <div id="D_center">
@@ -95,8 +112,10 @@
 
         <!-- <input type="date"> -->
 
+        <h3 id="calendar">googleカレンダー</h3>
+
         <iframe
-            src="https://calendar.google.com/calendar/embed?src=t236qork78q8n6je6ktuul14cs%40group.calendar.google.com&ctz=Asia%2FTokyo"
+            src="https://calendar.google.com/calendar/embed?src=t236qork78q8n6je6ktuul14cs%40group.calendar.google.com&ctz=Asia%2FTokyo;showTitle=0"
             style="border: 0"
             width="800"
             height="600"
@@ -106,7 +125,7 @@
 
         <br><br><br>
 
-        <h2>東京スカイツリー</h2>
+        <h3 id="map">東京スカイツリー</h3>
         <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12958.62435382426!2d139.8019670920876!3d35.71007980784099!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188ed0d12f9adf%3A0x7d1d4fb31f43f72a!2z5p2x5Lqs44K544Kr44Kk44OE44Oq44O8!5e0!3m2!1sja!2sjp!4v1661083858264!5m2!1sja!2sjp"
             width="600"
@@ -119,16 +138,50 @@
 
         <br><br><br>
 
+        <h3 id="youtube">youtube</h3>
+        <p>G線上のアリア</p>
+        <div class="score">
+            T:G線上のアリア
+            M:4/4
+            L:1/4
+            K:Emin
+            V:1
+            [a,df-]4 ([b,df]4 | f)a1/2g1/2e1/2d1/2c1/2d1/2cBA2 | a4 -a |
+            V:2 bass
+            D,DCC, B,,B,A,A,, | G,,G,^G,^G,, A,,A,G,G,, | F,,F,E,E,, |
+        </div>
+        <script>
+            var scoreObj = document.getElementsByClassName("score");
+            for( var i in scoreObj ){
+                ABCJS.renderAbc( scoreObj[i], scoreObj[i].innerHTML );
+            }
+        </script>
+
+        <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/thQWqRDZj7E"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+        </iframe>
+
+        <p>参照元</p>
+        <a href="https://www.youtube.com/watch?v=thQWqRDZj7E">https://www.youtube.com/watch?v=thQWqRDZj7E</a>
+
+        <br><br><br><br>
+
+        <h3 id="photo">写真</h3>
         <img src="./figure/kiyomizu.jpeg" width="500px" alt="清水寺">
         <br><br><br>
         <img src="./figure/nbody.gif" width="500px" alt="N体シミュレーション">
         <br><br><br><br><br><br>
-        <!-- <p>
-          <a href="trade.html">trade</a>
-        </p>
-        <p>
-          <a href="othello.html">othello</a>
-        </p> -->
+
+
+        <p>参考文献</p>
+        <a href="https://www.abcjs.net/#where">https://www.abcjs.net/#where</a>
+
 
     </div>
 </body>
